@@ -151,6 +151,9 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
 .toast.on{opacity:1}
 [hidden]{display:none!important}
+.tile{position:relative;overflow:hidden}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sheet .tile.hero{width:150px;height:200px;border-radius:18px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -616,7 +619,7 @@ function renderWeek(){
       const others=new Set(all.filter(x=>x!==id).flatMap(x=>BY[x].keys));
       const common=r.keys.filter(k=>others.has(k)).slice(0,3).map(k=>K[k][0].split(" (")[0].split(" /")[0].toLowerCase());
       h += `<article class="dish ${locked?"locked":""}">
-        <button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}</span><span>
+        <button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}${cover(r)}</span><span>
           <span class="dish-name">${esc(r.n)}</span>
           <span class="dish-meta">${r.t} min, ${DIF[r.d]}, ${esc(r.r)}</span>
           ${common.length?`<span class="dish-also">Reaproveita: ${esc(common.join(", "))}</span>`:""}
@@ -663,7 +666,7 @@ function renderLib(){
    <input class="search" type="search" placeholder="Buscar por nome ou ingrediente (ex.: frango, banana)" value="${esc(libQuery)}" data-act="search" aria-label="Buscar receitas">
    <div class="chips" role="group" aria-label="Filtrar">${chips.map(([k,l])=>`<button data-act="filter" data-f="${k}" aria-pressed="${libFilter===k}">${l}</button>`).join("")}</div>
    <p class="libcount">${list.length} receita${list.length===1?"":"s"}</p><div id="liblist">`;
-  h+= list.length ? list.map(r=>`<article class="dish c-${r.c}"><button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}</span><span>
+  h+= list.length ? list.map(r=>`<article class="dish c-${r.c}"><button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}${cover(r)}</span><span>
       <span class="dish-name">${esc(r.n)}</span><span class="dish-meta">${CAT[r.c].s}, ${r.t} min, ${DIF[r.d]}</span></span></button></article>`).join("")
     : `<p class="sub">Nenhuma receita com “${esc(libQuery)}”. Tente outro ingrediente.</p>`;
   h+=`</div><section class="extras"><h2>Outros vídeos de receita nos seus salvos</h2>
@@ -675,7 +678,7 @@ function renderLib(){
 function openRecipe(id){
   const r=BY[id]; const url=`https://www.tiktok.com/@${r.u}/video/${r.vid}`;
   $("#sheet-body").innerHTML=`<div class="sheet-top"><button class="iconbtn" data-act="close" aria-label="Fechar">${ICON.close}</button></div>
-    <div class="c-${r.c}"><span class="tile">${r.e}</span></div>
+    <div class="c-${r.c}"><span class="tile hero">${r.e}${cover(r)}</span></div>
     <h2 id="sheet-title">${esc(r.n)}</h2>
     <div class="facts"><span class="fact"><b>${r.t} min</b>tempo</span><span class="fact"><b>${DIF[r.d]}</b>dificuldade</span><span class="fact"><b>${esc(r.r)}</b>rende</span></div>
     <p class="by">${CAT[r.c].s}, receita de <a href="${url}" target="_blank" rel="noopener">@${esc(r.u)}</a></p>
@@ -686,6 +689,8 @@ function openRecipe(id){
     ${r.a?`<p class="obs">A legenda não trazia o passo a passo completo, então resumi a partir dela. Vale dar uma olhada no vídeo pra conferir os detalhes.</p>`:""}`;
   const d=$("#sheet"); if(!d.open) d.showModal(); d.scrollTop=0;
 }
+
+function cover(r){ return `<img src="img/${r.vid}.jpg" alt="" loading="lazy" onerror="this.remove()">`; }
 
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("on"),1800); }
 
