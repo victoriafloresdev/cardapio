@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cardápio da semana</title>
+<meta name="theme-color" content="#EEF3EA">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF3EA; --surface:#FFFFFF; --ink:#1C2A22; --muted:#5A6A5F; --line:#D3DDCD;
+  --leaf:#2E7D4F; --tomato:#D4432A; --yolk:#E9A51F; --oat:#A87A3C; --berry:#BE3D67;
+  --paper:#FFFCEF; --rule:#E7DFC2;
+  --head:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --hand:"Kalam", "Comic Sans MS", "Segoe Print", cursive;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111915; --surface:#19241D; --ink:#E5EDE6; --muted:#9DB0A3; --line:#2B3A31;
+    --leaf:#62C189; --tomato:#F06B51; --yolk:#F2C153; --oat:#D2A86C; --berry:#EC7FA2;
+    --paper:#1E2921; --rule:#2F3D33; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111915; --surface:#19241D; --ink:#E5EDE6; --muted:#9DB0A3; --line:#2B3A31;
+  --leaf:#62C189; --tomato:#F06B51; --yolk:#F2C153; --oat:#D2A86C; --berry:#EC7FA2;
+  --paper:#1E2921; --rule:#2F3D33; color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.5 var(--body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+a{color:var(--leaf)}
+:focus-visible{outline:3px solid var(--yolk);outline-offset:2px;border-radius:6px}
+.wrap{max-width:720px;margin:0 auto;padding:20px 18px 120px}
+
+/* header */
+.top{display:flex;align-items:center;gap:10px;margin:4px 0 2px}
+.top h1{font:800 clamp(1.7rem,6.4vw,2.5rem)/1.05 var(--head);letter-spacing:-.02em;margin:0;flex:1}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn svg{width:18px;height:18px}
+.sub{color:var(--muted);margin:6px 0 18px;font-size:.95rem}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:3px}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.9rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.btn{border:0;border-radius:999px;padding:10px 18px;font-weight:700;cursor:pointer;background:var(--tomato);color:#fff;display:inline-flex;gap:8px;align-items:center}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn svg{width:16px;height:16px}
+
+/* start here */
+.start{border-left:4px solid var(--yolk);padding:4px 0 4px 16px;margin:0 0 30px}
+.start h2{font:700 1.15rem/1.2 var(--head);margin:0 0 10px}
+.start ol{margin:0;padding-left:1.2em}
+.start li{margin:0 0 8px}
+.start li b{font-weight:600}
+.shared{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pill{font-size:.82rem;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--leaf) 14%,var(--surface));color:var(--ink)}
+
+/* meals */
+.meal{margin:0 0 28px}
+.meal h2{font:700 1.25rem/1.2 var(--head);margin:0;display:flex;align-items:center;gap:10px}
+.meal h2::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--cat)}
+.meal .hint{color:var(--muted);font-size:.9rem;margin:4px 0 10px}
+.dish{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 8px 8px 8px;margin-bottom:8px}
+.dish.locked{border-color:var(--cat);box-shadow:inset 3px 0 0 var(--cat)}
+.dish-open{flex:1;display:flex;align-items:center;gap:12px;border:0;background:none;text-align:left;cursor:pointer;padding:4px;min-width:0}
+.tile{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:1.7rem;flex:none;background:color-mix(in srgb,var(--cat) 20%,var(--surface))}
+.dish-name{display:block;font:700 1.02rem/1.25 var(--head)}
+.dish-meta{display:block;color:var(--muted);font-size:.85rem;margin-top:2px}
+.dish-also{display:block;font-size:.8rem;margin-top:3px;color:var(--leaf);font-weight:600}
+.act{display:flex;flex-direction:column;gap:4px}
+.act button{border:0;background:none;width:36px;height:34px;border-radius:10px;cursor:pointer;color:var(--muted);display:grid;place-items:center}
+.act button:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.act button[aria-pressed="true"]{color:var(--cat)}
+.act svg{width:18px;height:18px}
+.c-almoco{--cat:var(--leaf)} .c-lanche{--cat:var(--yolk)} .c-cafe{--cat:var(--oat)} .c-doce{--cat:var(--berry)}
+
+/* shopping note: the one bold thing */
+.note{background:var(--paper);border-radius:6px 6px 22px 6px;padding:22px 18px 26px 18px;box-shadow:0 1px 0 var(--rule),0 14px 30px -18px color-mix(in srgb,var(--ink) 45%,transparent);position:relative}
+.note h1{font:700 2rem/1.1 var(--hand);margin:0 0 4px;color:var(--tomato)}
+.note .prog{font-family:var(--hand);color:var(--muted);margin:0 0 14px}
+.bar{height:6px;border-radius:6px;background:var(--rule);overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;background:var(--leaf);transition:width .3s}
+.note h3{font:700 1rem/1.2 var(--body);margin:20px 0 4px;color:var(--muted)}
+.note ul{list-style:none;margin:0;padding:0}
+.note li{border-bottom:1px solid var(--rule)}
+.note label{display:flex;gap:12px;align-items:flex-start;padding:9px 2px;cursor:pointer}
+.note input{appearance:none;-webkit-appearance:none;width:22px;height:22px;border:2px solid var(--muted);border-radius:50%;margin:3px 0 0;flex:none;display:grid;place-items:center;cursor:pointer}
+.note input:checked{background:var(--leaf);border-color:var(--leaf)}
+.note input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.item{font:400 1.2rem/1.3 var(--hand)}
+.item b{font-weight:700}
+.qty{color:var(--tomato);font-weight:700;white-space:nowrap}
+.uses{display:block;font:400 .78rem/1.35 var(--body);color:var(--muted);margin-top:1px}
+.note input:checked + span .item{text-decoration:line-through;text-decoration-thickness:2px;opacity:.5}
+details.pantry summary{cursor:pointer;font-weight:700;color:var(--muted);margin-top:22px}
+.listtools{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 0}
+
+/* library */
+.search{width:100%;padding:12px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;margin:4px 0 12px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap;font-weight:600;font-size:.9rem}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.libcount{color:var(--muted);font-size:.9rem;margin:0 0 10px}
+.extras{margin-top:34px}
+.extras h2{font:700 1.2rem/1.2 var(--head);margin:0 0 4px}
+.extras p{color:var(--muted);margin:0 0 10px;font-size:.92rem}
+.extras ul{margin:0;padding:0;list-style:none}
+.extras li{padding:9px 0;border-bottom:1px solid var(--line)}
+.extras a{text-decoration:none;color:var(--ink);font-weight:600}
+.extras small{color:var(--muted);display:block}
+
+/* bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav.tabs div{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+nav.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 10px;text-decoration:none;color:var(--muted);font-size:.78rem;font-weight:600}
+nav.tabs a svg{width:22px;height:22px}
+nav.tabs a[aria-current="page"]{color:var(--tomato)}
+
+/* recipe sheet */
+dialog{border:0;padding:0;width:min(680px,100%);max-width:100%;max-height:100%;height:100%;margin:0 auto;background:var(--bg);color:var(--ink);overflow-y:auto}
+@media (min-width:700px){dialog{height:auto;max-height:92vh;margin:4vh auto;border-radius:22px}}
+dialog::backdrop{background:rgba(10,20,14,.55)}
+.sheet{padding:calc(env(safe-area-inset-top,0px) + 14px) 20px calc(env(safe-area-inset-bottom,0px) + 32px)}
+.sheet-top{display:flex;justify-content:flex-end;position:sticky;top:0}
+.sheet .tile{width:68px;height:68px;font-size:2.3rem;border-radius:18px}
+.sheet h2{font:800 1.7rem/1.1 var(--head);letter-spacing:-.01em;margin:12px 0 6px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-size:.88rem}
+.fact b{display:block;font:700 1rem/1.2 var(--head)}
+.by{color:var(--muted);font-size:.9rem;margin:8px 0 14px}
+.video{margin:6px 0 18px}
+.video iframe{display:block;width:min(100%,330px);aspect-ratio:9/16;max-height:72vh;border:0;border-radius:16px;margin:12px auto 0;background:#000}
+.sheet h3{font:700 1.15rem/1.2 var(--head);margin:22px 0 8px}
+.ings{margin:0;padding:0;list-style:none}
+.ings li{padding:7px 0;border-bottom:1px dashed var(--line)}
+.steps{margin:0;padding-left:1.4em}
+.steps li{margin:0 0 12px;padding-left:4px;max-width:65ch}
+.steps li::marker{font:700 1rem var(--head);color:var(--tomato)}
+.obs{background:color-mix(in srgb,var(--yolk) 16%,var(--surface));border-radius:12px;padding:10px 14px;font-size:.9rem;margin-top:16px}
+.tip{border-left:3px solid var(--leaf);padding:4px 0 4px 12px;margin-top:16px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.toast.on{opacity:1}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section id="v-semana" aria-labelledby="t-semana"></section>
+  <section id="v-compras" hidden></section>
+  <section id="v-receitas" hidden></section>
+</main>
+
+<nav class="tabs" aria-label="Seções">
+  <div>
+    <a href="#semana" data-v="semana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Semana</a>
+    <a href="#compras" data-v="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20.5" r="1.3"/><circle cx="17" cy="20.5" r="1.3"/></svg>Compras</a>
+    <a href="#receitas" data-v="receitas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2v-1.5z"/><path d="M8 7h7M8 11h5"/></svg>Receitas</a>
+  </div>
+</nav>
+
+<dialog id="sheet" aria-labelledby="sheet-title"><div class="sheet" id="sheet-body"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============ INGREDIENTES (nome, seção da lista) ============ */
+const K = {
+  frango:["Peito de frango","carnes"], sobrecoxa:["Sobrecoxa de frango sem osso","carnes"],
+  carnemoida:["Carne moída magra (patinho)","carnes"], patinho:["Patinho ou músculo em cubos","carnes"],
+  paleta:["Paleta suína","carnes"], mignonsuino:["Filé-mignon suíno","carnes"], ovo:["Ovos","carnes"],
+  leite:["Leite desnatado","frios"], iogurte:["Iogurte natural ou desnatado","frios"], mussarela:["Mussarela (light)","frios"],
+  parmesao:["Parmesão ralado","frios"], requeijao:["Requeijão light","frios"], ricota:["Creme de ricota light","frios"],
+  cremecheese:["Cream cheese light","frios"], cremeleite:["Creme de leite leve","frios"], cheddar:["Cheddar light","frios"],
+  manteiga:["Manteiga","frios"], massapastel:["Discos de massa de pastel","frios"],
+  brocolis:["Brócolis","horti"], batata:["Batata inglesa","horti"], mandioquinha:["Mandioquinha (batata-baroa)","horti"],
+  abobora:["Abóbora cabotiá","horti"], cenoura:["Cenoura","horti"], chuchu:["Chuchu","horti"], tomate:["Tomate","horti"],
+  tomatecereja:["Tomate-cereja","horti"], cebola:["Cebola","horti"], cebolaroxa:["Cebola roxa","horti"], alho:["Alho (dentes)","horti"],
+  alhoporo:["Alho-poró","horti"], pimentao:["Pimentão","horti"], pepino:["Pepino japonês","horti"], alface:["Alface","horti"],
+  repolho:["Repolho","horti"], espinafre:["Espinafre","horti"], salsinha:["Salsinha / cheiro-verde","horti"],
+  cebolinha:["Cebolinha","horti"], limao:["Limão","horti"], laranja:["Laranja","horti"], gengibre:["Gengibre","horti"],
+  alecrim:["Alecrim / ervas frescas","horti"], banana:["Banana","horti"], morango:["Morango","horti"], uva:["Uva sem caroço","horti"],
+  manga:["Manga","horti"], frutasvermelhas:["Framboesa ou frutas vermelhas","horti"],
+  macarrao:["Macarrão parafuso","merc"], arroz:["Arroz","merc"], massalasanha:["Massa de lasanha","merc"], tortilha:["Tortilha / Rap10","merc"],
+  pao:["Pão (de forma ou de hambúrguer)","merc"], magictoast:["Magic Toast","merc"], bolachamaria:["Bolacha Maria","merc"],
+  panko:["Farinha panko","merc"], floconmilho:["Flocos de milho sem açúcar","merc"], aveia:["Aveia em flocos","merc"],
+  farelo:["Farelo de aveia","merc"], farinhaaveia:["Farinha de aveia","merc"], farinhaarroz:["Farinha de arroz","merc"],
+  graodebico:["Grão-de-bico cozido","merc"], milho:["Milho em lata","merc"], azeitona:["Azeitona","merc"], picles:["Picles de pepino","merc"],
+  passata:["Molho de tomate / passata","merc"], extratotomate:["Extrato de tomate","merc"], ketchup:["Ketchup","merc"],
+  mostarda:["Mostarda","merc"], maionese:["Maionese light","merc"], shoyu:["Shoyu","merc"], mel:["Mel","merc"],
+  sriracha:["Sriracha / molho de pimenta","merc"], gergelim:["Gergelim","merc"], caldo:["Caldo de frango","merc"],
+  atum:["Atum em lata","merc"], tamara:["Tâmaras","merc"], whey:["Whey protein","merc"], leitepo:["Leite em pó desnatado","merc"],
+  cacau:["Cacau em pó","merc"], chocolate:["Chocolate 50–70%","merc"], chocolatebranco:["Chocolate branco","merc"], chia:["Chia","merc"],
+  pastaamendoim:["Pasta de amendoim","merc"], coco:["Coco ralado","merc"], gelatina:["Gelatina sem sabor","merc"],
+  gelatinazero:["Gelatina zero (caixinha)","merc"], cocada:["Doce ou creme de coco","merc"],
+  trigo:["Farinha de trigo","desp"], amido:["Amido de milho","desp"], molhoingles:["Molho inglês","desp"], vinagrearroz:["Vinagre de arroz","desp"],
+  vinagre:["Vinagre","desp"], cafe:["Café","desp"], fermento:["Fermento em pó","desp"], adocante:["Adoçante","desp"], sal:["Sal","desp"],
+  pimenta:["Pimenta-do-reino","desp"], azeite:["Azeite","desp"], paprica:["Páprica defumada","desp"], alho_po:["Alho em pó","desp"],
+  cebola_po:["Cebola em pó","desp"], oregano:["Orégano / ervas secas","desp"], cominho:["Cominho","desp"], acafrao:["Açafrão / cúrcuma","desp"],
+  lemon:["Lemon pepper","desp"], chimichurri:["Chimichurri","desp"], calabresa:["Pimenta calabresa","desp"], curry:["Curry","desp"],
+  canela:["Canela","desp"], nozmoscada:["Noz-moscada","desp"]
+};
+const SECTIONS = [["horti","Hortifrúti"],["carnes","Carnes e ovos"],["frios","Laticínios e frios"],["merc","Mercearia"]];
+
+/* ============ RECEITAS DOS SEUS SALVOS ============
+   i: "chave quantidade:texto"  (quantidade em g, ml ou un — vai pra lista de compras)
+   a: 1 = passo a passo resumido por mim (a legenda não tinha o modo de preparo completo) */
+const R = [
+/* ---------- ALMOÇOS / MARMITAS ---------- */
+{id:"7698747712795118849",u:"lucaslacerdanutri",n:"Frango ao molho branco",c:"almoco",e:"🍗",t:30,d:1,r:"3 porções",
+ i:["frango 400g:400 g de peito de frango","leite 400ml:400 ml de leite desnatado","amido 10g:10 g de amido de milho (ou farinha de trigo)","parmesao 50g:50 g de parmesão ralado","azeite:1 colher de sopa de azeite","sal","pimenta","nozmoscada","alho_po","cebola_po"],
+ s:["Seque o frango com papel-toalha e tempere com sal e pimenta.","Grelhe com o azeite uns 2 minutos de cada lado, só até formar uma crostinha. Reserve: ele termina de cozinhar no molho.","Na mesma frigideira, misture o leite com o amido. Junte o parmesão, a noz-moscada, o alho e a cebola em pó e mexa em fogo baixo até engrossar.","Volte o frango para o molho e cozinhe até ficar bem cozido por dentro."],
+ tip:"Fica ótimo com arroz e legumes."},
+{id:"7702525002565831942",u:"lucaslacerdanutri",n:"Salada cremosa de macarrão com brócolis",c:"almoco",e:"🥗",t:30,d:1,r:"2 a 3 porções",
+ i:["macarrao 100g:100 g de macarrão (cru)","brocolis 200g:200 g de brócolis","ovo 4un:4 ovos","alface:Alface à vontade","tomatecereja 100g:100 g de tomate-cereja","azeitona 50g:50 g de azeitona","milho 100g:100 g de milho cozido","alhoporo:Alho-poró a gosto","ricota 40g:40 g de creme de ricota light (ou maionese light)","salsinha","azeite:10 g de azeite","sal","paprica","cominho","oregano"],
+ s:["Cozinhe o macarrão al dente em água com sal. Aproveite o vapor da mesma panela para cozinhar o brócolis numa peneira até ficar macio, mas firme.","Cozinhe os ovos por uns 10 minutos, descasque e pique.","Leve o milho e o alho-poró à air fryer a 220 °C até dourarem de leve.","Numa tigela grande, junte alface picada, tomates, azeitonas, milho e alho-poró. Acrescente o macarrão, o brócolis e os ovos.","Tempere com sal, páprica, cominho, orégano, o creme de ricota e o azeite. Misture com cuidado e finalize com salsinha."],
+ tip:"Pode comer gelada, então funciona bem como marmita."},
+{id:"7701715970963901717",u:"lucaslacerdanutri",n:"Carne de panela de paleta suína",c:"almoco",e:"🍲",t:70,d:2,r:"6 porções",
+ i:["paleta 1000g:1 kg de paleta suína em cubos","cebola 1un:1 cebola","alhoporo:½ talo de alho-poró","alho 4un:4 dentes de alho","salsinha","mostarda:3 colheres de sopa de mostarda","alecrim:Alecrim e manjericão a gosto","passata 1un:1 sachê de passata de tomate","tomate 200g:200 g de tomate sem semente","cenoura 200g:200 g de cenoura","sal","paprica","acafrao","calabresa"],
+ s:["Doure bem a carne com um fio de azeite na panela de pressão, de todos os lados.","Bata no processador a cebola, o alho-poró, o alho, a salsinha, a mostarda e as ervas até virar uma pasta.","Junte a pasta à carne com a passata, 200 ml de água, os tomates, a cenoura e os temperos. Tampe e cozinhe 40 minutos depois de pegar pressão.","Tire a pressão, separe a carne e desfie. Bata o caldo com os legumes até ficar liso.","Volte tudo para a panela e cozinhe uns 10 minutos em fogo baixo, até engrossar."],
+ tip:"Rende bastante: congele em porções."},
+{id:"7676584171422108949",u:"renatabrugnera",n:"Escondidinho de abóbora com frango",c:"almoco",e:"🎃",t:35,d:1,r:"3 marmitas",
+ i:["abobora 750g:750 g de abóbora cabotiá","frango 500g:500 g de peito de frango (vira uns 390 g desfiado)","requeijao:3 colheres de sopa de requeijão light","mussarela 60g:60 g de mussarela","cebola 1un:1 cebola","tomate 1un:1 tomate picado","alecrim","sal","pimenta","curry","acafrao","paprica"],
+ s:["Cozinhe a abóbora no micro-ondas de 5 em 5 minutos até amassar fácil. Faça um purê com sal, pimenta e alecrim.","Cozinhe e desfie o frango. Refogue com cebola, tomate, sal, pimenta, curry, açafrão e páprica.","Monte nos potes: frango com 1 colher de requeijão, o purê por cima e a mussarela.","Gratine no forno ou na air fryer, ou guarde assim: até 5 dias na geladeira e 30 no freezer."]},
+{id:"7678071470836403477",u:"renatabrugnera",n:"Batata cremosa com carne moída",c:"almoco",e:"🥔",t:35,d:1,r:"3 marmitas",
+ i:["batata 750g:750 g de batatas pequenas","carnemoida 400g:400 g de patinho moído","cremeleite 90g:90 g de creme de leite leve (ou requeijão)","mussarela 30g:30 g de mussarela","cebola 1un:1 cebola","salsinha","paprica","sal","pimenta"],
+ s:["Cozinhe as batatas só em água até ficarem quase macias.","Doure as batatas dos dois lados numa frigideira com cebola, sal e pimenta.","Refogue a carne moída com cebola, páprica, sal e pimenta.","Molho: misture o creme de leite com a mussarela e a salsinha.","Monte: batata, carne e o molho por cima. Dura 5 dias na geladeira; aqueça na air fryer ou no micro-ondas."]},
+{id:"7671389568326798612",u:"renatabrugnera",n:"Frango com creme de cebola e farofa crocante",c:"almoco",e:"🧅",t:40,d:2,r:"4 porções",
+ i:["frango 700g:700 g de peito de frango","maionese:2 colheres de sopa de maionese light","cebola 2un:1 cebola grande + ½ para a farofa","leite 200ml:200 ml de leite desnatado","batata 1un:1 batata grande cozida","panko 30g:30 g de farinha panko","azeite","cebola_po","sal","pimenta"],
+ s:["Tempere o frango com a maionese, cebola em pó, sal e pimenta, e grelhe ou asse.","Caramelize a cebola em tiras com uma pitada de sal, em fogo baixo, mexendo sempre.","Bata a cebola caramelizada com o leite e a batata cozida até virar um creme. Misture ao frango.","Farofa: doure ½ cebola em cubos com azeite e sal, junte o panko e mexa até ficar crocante. Finalize por cima."],
+ tip:"Vai bem com arroz ou macarrão."},
+{id:"7680738024640138516",u:"anamenezesfit",n:"Lasanha de pote para congelar",c:"almoco",e:"🍝",t:40,d:2,r:"3 potes",a:1,
+ i:["carnemoida 500g:500 g de patinho moído","passata 200ml:200 ml de molho de tomate","cebola 1un:1 cebola (roxa ou branca)","alho 2un:2 dentes de alho","ketchup:1 colher de sopa de ketchup","massalasanha 6un:6 folhas de massa de lasanha","requeijao:15 g de requeijão light","mussarela 45g:45 g de mussarela","sal","paprica","pimenta"],
+ s:["Refogue a cebola e o alho, junte a carne e doure.","Tempere com sal, páprica e pimenta, adicione o molho de tomate e o ketchup e cozinhe alguns minutos.","Em cada pote, intercale massa e carne (uns 160 g de carne por pote). Finalize com requeijão e mussarela.","Congele. Na hora, asse no forno ou na air fryer até a massa cozinhar e o queijo derreter."]},
+{id:"7629355844110388487",u:"dr.riqmonteiro",n:"Arroz com frango teriyaki e mel",c:"almoco",e:"🍚",t:40,d:2,r:"4 porções (metade da receita original)",
+ i:["sobrecoxa 700g:700 g de sobrecoxa sem pele e sem osso","shoyu 45ml:3 colheres de sopa de shoyu","mel 30g:1 ½ colher de sopa de mel","vinagrearroz:1 colher de sopa de vinagre de arroz","alho 2un:2 dentes de alho","arroz 240g:240 g de arroz cru","maionese 50g:50 g de maionese light","sriracha:1 colher de sopa de sriracha","mostarda:½ colher de chá de mostarda","cebolinha","gergelim"],
+ s:["Na pressão: frango, shoyu, mel, vinagre, alho e 120 ml de água. Cozinhe 15 minutos depois de pegar pressão, até desfiar fácil.","Tire a pressão, junte o arroz cru e água só até cobrir (uns 250 ml). Cozinhe semi-tampado, mexendo de vez em quando, até o arroz amaciar.","Molho: misture maionese, sriracha, mostarda e um pouco de leite até dar ponto.","Divida em porções com o molho, cebolinha e gergelim."]},
+{id:"7668682455515237650",u:"lucaslacerdanutri",n:"Marmita de frango agridoce com legumes assados",c:"almoco",e:"🥕",t:50,d:2,r:"5 marmitas",a:1,
+ i:["frango 700g:700 g de peito de frango em cubos","batata 500g:500 g de batata inglesa","mandioquinha 500g:500 g de mandioquinha","cenoura 300g:300 g de cenoura","milho 120g:120 g de milho","pimentao 1un:Pimentão a gosto","tomatecereja 100g:Tomate-cereja à vontade","shoyu 100ml:100 ml de shoyu light","molhoingles:50 ml de molho inglês","limao 1un:Suco de 1 limão","vinagre:50 ml de vinagre de maçã","mel 20g:20 g de mel","amido 20g:20 g de amido de milho","alho_po","azeite","sal","paprica"],
+ s:["Corte batata, mandioquinha, cenoura e pimentão. Tempere com azeite, sal e páprica e asse a 200 °C até dourar (uns 35 minutos).","Tempere o frango e doure na frigideira com um fio de azeite.","Molho: misture shoyu, molho inglês, limão, vinagre, mel, amido e alho em pó. Despeje no frango e mexa até engrossar.","Monte as marmitas com legumes, milho, tomatinhos e frango."]},
+{id:"7667316806146657557",u:"prilar_ap_43",n:"Ragu de patinho com purê de mandioquinha",c:"almoco",e:"🥩",t:70,d:2,r:"5 marmitas",
+ i:["patinho 1000g:1 kg de patinho (ou músculo) em cubos","cebola 1un:1 cebola","alho 3un:3 dentes de alho","pimentao 1un:½ pimentão vermelho","tomate 1un:1 tomate","mandioquinha 800g:800 g de mandioquinha","leite 100ml:100 ml de leite desnatado","parmesao 30g:30 g de parmesão ralado","chimichurri","paprica","sal","pimenta"],
+ s:["Sele bem a carne na panela de pressão.","Refogue cebola, alho e pimentão. Tempere com sal, chimichurri, páprica e pimenta.","Junte o tomate inteiro, tampe e cozinhe 45 a 50 minutos, até a carne desmanchar. Desfie.","Purê: cozinhe a mandioquinha com sal, bata com o leite e finalize com parmesão.","Marmita: uma camada de purê e outra de ragu."],
+ tip:"O ragu também vira recheio de wrap, hambúrguer ou pastel na mesma semana."},
+{id:"7649405700229074194",u:"lucaslacerdanutri",n:"Torta de brócolis com carne",c:"almoco",e:"🥦",t:45,d:2,r:"4 porções",
+ i:["brocolis 800g:800 g de brócolis","carnemoida 300g:300 g de carne moída magra","requeijao 60g:60 g de requeijão light","mussarela 60g:60 g de mussarela","salsinha"],
+ s:["Cozinhe o brócolis no vapor por uns 10 minutos e pique bem.","Refogue a carne moída com seus temperos.","Monte numa travessa: brócolis bem pressionado, carne, requeijão. Repita. Última camada: brócolis, mussarela e salsinha.","Forno preaquecido a 240 °C por 20 a 30 minutos."],
+ tip:"Pressione bem as camadas de brócolis para a torta não desmanchar."},
+{id:"7662390292661767445",u:"lucaslacerdanutri",n:"Salada de batata assada, grão-de-bico e atum",c:"almoco",e:"🐟",t:45,d:1,r:"4 porções",
+ i:["batata 400g:400 g de batata","graodebico 150g:150 g de grão-de-bico cozido","tomatecereja 200g:200 g de tomate-cereja","pimentao 50g:50 g de pimentão verde","azeitona 30g:30 g de azeitona (opcional)","atum 1un:1 lata de atum drenado","cebolaroxa:Cebola roxa (opcional)","salsinha","azeite","paprica","alho_po","sal"],
+ s:["Corte a batata em cubos e tempere com azeite, páprica, alho em pó e sal.","Asse a 220 °C: 20 minutos coberta com papel-alumínio e mais 20 descoberta.","Misture com grão-de-bico, tomatinhos, pimentão, azeitonas, atum e cheiro-verde."],
+ tip:"Pode comer fria. A cebola roxa fica ótima em conserva rápida de vinagre com água."},
+{id:"7670612185822940448",u:"fernandofscacador",n:"Bowl de frango estilo gyros com tzatziki",c:"almoco",e:"🥙",t:45,d:2,r:"4 porções",
+ i:["frango 750g:750 g de peito de frango","batata 750g:750 g de batata","iogurte 250g:250 g de iogurte grego light (100 g pro frango, 150 g pro molho)","tomate 2un:2 tomates","pepino 2un:1 ½ pepino","cebola 1un:1 cebola","limao 1un:Suco de limão","alho_po","paprica","oregano","azeite","sal","pimenta"],
+ s:["Tempere a batata com sal, pimenta e alho e asse a 180 °C por 30 a 40 minutos.","Marine o frango no iogurte com sal, pimenta, alho, páprica e orégano. Grelhe ou asse.","Salada: tomate, pepino e cebola com sal, orégano e azeite.","Tzatziki: ½ pepino ralado e bem espremido, iogurte, limão e alho.","Monte o bowl com tudo."]},
+{id:"7647672674117831943",u:"yasfernandesrocha",n:"Caldo de frango com batata e chuchu",c:"almoco",e:"🍜",t:40,d:1,r:"4 porções",a:1,
+ i:["frango 500g:500 g de peito de frango em cubinhos","batata 600g:3 batatas médias","chuchu 1un:1 chuchu","cebola 1un:½ cebola processada","alho 3un:3 dentes de alho","chimichurri","paprica","azeite","sal"],
+ s:["Refogue a cebola e o alho no azeite, junte o frango e doure.","Adicione batata e chuchu em cubinhos, os temperos e 1 litro de água.","Cozinhe até a batata começar a desmanchar (uns 25 minutos na panela comum).","Para ficar mais cremoso, bata uma parte do caldo e volte para a panela."]},
+{id:"7550320286609034552",u:"aprovadopelocasal",n:"Frango com brócolis na air fryer",c:"almoco",e:"🔥",t:35,d:1,r:"2 porções",
+ i:["frango 500g:500 g de peito de frango em cubos","brocolis 250g:250 g de brócolis","shoyu 100ml:100 ml de shoyu","mel 20g:20 g de mel","sal","cebola_po","alho_po","paprica"],
+ s:["Misture tudo numa tigela.","Air fryer a 180 °C por 30 minutos, mexendo na metade.","Se quiser crocante, suba para 200 °C nos últimos 3 minutos."]},
+{id:"7633801613169151239",u:"dr.riqmonteiro",n:"Macarrão cremoso com frango cajun",c:"almoco",e:"🌶️",t:40,d:2,r:"4 porções (metade da original)",
+ i:["frango 500g:500 g de peito de frango","pimentao 2un:2 pimentões em cubos","macarrao 250g:250 g de macarrão","ricota 200g:1 pote (200 g) de creme de ricota light","manteiga:1 colher de chá de manteiga","paprica","alho_po","oregano","sal","pimenta"],
+ s:["Doure o frango com um fio de azeite e os temperos.","Junte a manteiga e refogue rapidamente os pimentões.","Cubra com água e cozinhe 20 a 30 minutos, até o frango amaciar. Desfie.","Adicione o macarrão cru e água só até cobrir. Cozinhe até a massa amaciar e o líquido virar um creme.","Misture o creme de ricota e ajuste a textura com um pouco de leite."]},
+{id:"7630201935777303828",u:"renatabrugnera",n:"Arroz com frango e creme de milho",c:"almoco",e:"🌽",t:40,d:1,r:"6 marmitas",a:1,
+ i:["frango 1000g:1 kg de peito de frango","milho 2un:2 latas de milho","leite 400ml:400 ml de leite desnatado","amido:2 colheres de sopa de amido de milho","arroz 210g:~210 g de arroz cru (35 g por marmita)","mussarela 60g:60 g de mussarela","cebolinha","sal","pimenta"],
+ s:["Cozinhe o frango temperado e desfie ou corte em cubos.","Creme: bata o milho com o leite e o amido e leve ao fogo mexendo até engrossar.","Misture o creme ao frango.","Marmita: 100 g de arroz cozido, 120 g do frango, 10 g de mussarela e cebolinha. Aqueça 2min30 no micro-ondas."]},
+{id:"7623158508111826184",u:"sarahmbonet",n:"Frango ao shoyu com pepino agridoce",c:"almoco",e:"🥒",t:30,d:1,r:"5 marmitas",a:1,
+ i:["frango 1000g:1 kg de frango","pepino 500g:500 g de pepino japonês","shoyu 60ml:60 ml de shoyu","extratotomate:1 colher de sopa de extrato de tomate","alho:1 colher de sopa de alho picado","gergelim:2 colheres de sopa de gergelim","mel:1 colher de sopa de mel","vinagrearroz:30 ml de vinagre de arroz","arroz:Arroz a gosto","sal","pimenta","calabresa"],
+ s:["Tempere o frango com sal, pimenta, alho, extrato de tomate, shoyu e pimenta líquida. Doure na frigideira e finalize com gergelim.","Pepino: fatie fino e tempere com sal, páprica picante, calabresa, gergelim, mel e vinagre de arroz.","Monte as marmitas com arroz, frango e pepino."]},
+{id:"7639857005955419399",u:"sarahmbonet",n:"Legumes assados com frango cremoso",c:"almoco",e:"🍠",t:50,d:1,r:"5 marmitas",a:1,
+ i:["frango 1000g:1 kg de frango","abobora 1un:1 abóbora cabotiá pequena","cebolaroxa 3un:3 cebolas roxas","repolho:½ repolho","tomate 2un:2 tomates sem semente","requeijao:2 ½ colheres de sopa de requeijão light","chimichurri","paprica","lemon","azeite","sal"],
+ s:["Corte cebolas, abóbora e repolho em pedaços, tempere com sal, páprica, lemon pepper e azeite e asse a 200 °C até dourar.","Tempere o frango com sal e chimichurri e doure na panela.","Junte o tomate picado e o requeijão e mexa até ficar cremoso.","Monte as marmitas."]},
+{id:"7203799109441080622",u:"thejoeduff",n:"Salada Big Mac",c:"almoco",e:"🍔",t:20,d:1,r:"2 porções grandes",
+ i:["carnemoida 450g:450 g de carne moída bem magra","alface 1un:1 alface americana grande","tomatecereja 100g:½ xícara de tomate-cereja","cebola 1un:½ cebola picada","picles 60g:Picles de pepino (uns 60 g)","maionese 120g:120 g de maionese light","ketchup 40g:3 colheres de sopa de ketchup","mostarda:1 colher de sopa de mostarda","vinagre:1 colher de sopa de vinagre","cebola_po","alho_po","paprica","sal"],
+ s:["Doure a carne moída e tempere com sal.","Molho: misture maionese, ketchup, mostarda, um pouco de picles picado, vinagre, cebola e alho em pó e páprica.","Monte: alface picada, tomate, cebola, picles e carne. Regue com o molho."]},
+{id:"7703576477392047382",u:"hanfoodfit",n:"Frango cremoso com tomate e espinafre + purê",c:"almoco",e:"🍅",t:45,d:2,r:"2 porções",a:1,
+ i:["frango 320g:320 g de peito de frango","cebola 1un:1 cebola","tomatecereja 200g:200 g de tomate-cereja","espinafre:2 punhados de espinafre","extratotomate:1 colher de sopa de extrato de tomate","caldo 200ml:200 ml de caldo de frango","cremecheese 100g:100 g de cream cheese light (40 no molho + 60 no purê)","brocolis 150g:150 g de brócolis","batata 400g:400 g de batata","mostarda:2 colheres de chá de mostarda","leite 40ml:40 ml de leite desnatado","parmesao:Parmesão para finalizar","paprica","oregano","alho_po","sal","pimenta"],
+ s:["Tempere o frango com páprica, sal e pimenta, doure e reserve.","Na mesma panela, refogue cebola e alho. Junte os tomates, páprica, orégano e o extrato.","Adicione o caldo, 40 g de cream cheese e o espinafre. Volte o frango e cozinhe até ficar pronto.","Purê: cozinhe a batata e amasse com mostarda, o resto do cream cheese, leite, sal e pimenta.","Sirva com brócolis cozido e um pouco de parmesão."]},
+{id:"7644269465001135378",u:"lucaslacerdanutri",n:"Filé-mignon suíno na air fryer",c:"almoco",e:"🐖",t:45,d:1,r:"~700 g de carne pronta",
+ i:["mignonsuino 1000g:1 kg de filé-mignon suíno","mostarda:1 colher de sopa de mostarda","azeite","alecrim","cebola_po","alho_po","cominho","paprica","pimenta","sal"],
+ s:["Tempere a carne com tudo e deixe na geladeira por pelo menos 6 horas.","Tire da geladeira 10 minutos antes.","Air fryer a 180 °C por uns 35 minutos.","Fatie ou desfie."],
+ tip:"Vira a proteína da semana: com salada, arroz e feijão ou no sanduíche."},
+{id:"7484267131643710725",u:"dr.riqmonteiro",n:"Frango crocante ao molho de laranja e mel",c:"almoco",e:"🍊",t:40,d:2,r:"4 porções (metade da original)",
+ i:["frango 600g:600 g de peito de frango em cubos","ovo 1un:1 clara","amido 40g:40 g de amido de milho","laranja 1un:1 laranja grande (suco e raspas)","shoyu 60ml:60 ml de shoyu","mel 30g:30 g de mel","gengibre:1 colher de chá de gengibre ralado","alho 1un:1 dente de alho","vinagrearroz:½ colher de sopa de vinagre de arroz","arroz 260g:260 g de arroz","cebolinha","gergelim","sal"],
+ s:["Tempere o frango com pouco sal, misture a clara e sacuda num pote fechado com o amido para empanar.","Air fryer a 200 °C por 8 a 12 minutos com um spray de azeite, até dourar.","Molho: mel, shoyu, vinagre, alho, gengibre e o suco de laranja com uma pitada de amido. Leve ao fogo até engrossar.","Envolva o frango no molho e finalize com cebolinha, raspas de laranja e gergelim. Sirva com arroz."]},
+
+/* ---------- LANCHES E JANTARES LEVES ---------- */
+{id:"7693242234149276935",u:"lucaslacerdanutri",n:"Hot pocket de carne com legumes",c:"lanche",e:"🥟",t:50,d:2,r:"6 unidades",
+ i:["carnemoida 300g:300 g de carne moída","brocolis 40g:40 g de brócolis","cenoura 40g:40 g de cenoura","pimentao 20g:20 g de pimentão","cebola:¼ de cebola","alho 3un:3 dentes de alho","farelo 30g:30 g de farelo de aveia","massapastel 12un:12 discos de massa de pastel","ketchup:6 colheres de sopa de ketchup","cheddar 60g:60 g de cheddar light","tomate 1un:6 rodelas de tomate","cebolaroxa:Cebola roxa a gosto","manteiga:5 g de manteiga","ovo 1un:1 gema","acafrao","gergelim","paprica","sal","pimenta"],
+ s:["Processe brócolis, cenoura, pimentão, cebola e alho. Misture à carne temperada e ao farelo de aveia. Modele 6 bifinhos de uns 70 g e grelhe.","Sobre 6 discos: ketchup, bifinho, cheddar, tomate e cebola roxa. Cubra com outro disco e aperte bem as bordas.","Pincele manteiga derretida com a gema e uma pitada de açafrão. Salpique gergelim.","Air fryer a 180 °C por uns 15 minutos."],
+ tip:"Dá pra congelar cru e assar direto do freezer (uns 20 minutos)."},
+{id:"7701345091465645332",u:"lucaslacerdanutri",n:"Hambúrguer de frango empanado recheado",c:"lanche",e:"🍔",t:40,d:2,r:"6 unidades",a:1,
+ i:["frango 400g:400 g de peito de frango","sobrecoxa 200g:200 g de sobrecoxa sem pele e sem osso","cebola 1un:1 cebola","alho 3un:3 dentes de alho (opcional)","mussarela 60g:60 g de mussarela (10 g em cada)","magictoast 12un:2 pacotinhos de Magic Toast (~12 torradas)","parmesao 50g:50 g de parmesão ralado","ovo 2un:2 ovos","sal","paprica","cominho"],
+ s:["Triture o frango, a sobrecoxa, a cebola, o alho e os temperos.","Modele 6 hambúrgueres, colocando 10 g de mussarela no meio de cada.","Passe no ovo batido e depois no Magic Toast triturado com parmesão.","Air fryer a 180 °C por 15 a 20 minutos, virando na metade. Ou congele crus."]},
+{id:"7679096385060293909",u:"lucaslacerdanutri",n:"Nuggets de frango crocantes",c:"lanche",e:"🍗",t:35,d:2,r:"8 nuggets",
+ i:["frango 500g:500 g de peito de frango","floconmilho 40g:40 g de flocos de milho sem açúcar","parmesao 40g:40 g de parmesão ralado","ovo 1un:1 ovo","acafrao","lemon","calabresa","alho_po","sal"],
+ s:["Triture o frango com os temperos e o sal e modele os nuggets.","Deixe no freezer por umas 2 horas para firmar.","Passe no ovo batido e nos flocos de milho triturados com parmesão.","Air fryer a 180 °C por 10 a 15 minutos, com um spray de azeite por cima."],
+ tip:"Pode deixar congelado por dias e empanar só na hora."},
+{id:"7639466929232579861",u:"1001_receitasfit",n:"Bolinhos de frango com aveia",c:"lanche",e:"🧆",t:30,d:1,r:"14 unidades",
+ i:["frango 500g:500 g de peito de frango","ovo 1un:1 ovo","iogurte 30g:2 colheres de sopa de iogurte natural","farinhaaveia 21g:3 colheres de sopa de farinha de aveia","alho 1un:1 dente de alho","panko 30g:½ xícara de panko","parmesao 30g:⅓ xícara de parmesão","azeite","sal","paprica","lemon"],
+ s:["Processe frango, ovo, iogurte, aveia, um fio de azeite, alho e temperos.","Modele bolinhas e empane em panko com parmesão.","Air fryer a 200 °C por 10 a 12 minutos, virando na metade."]},
+{id:"7671418113258229013",u:"isaaoliveiral",n:"Sanduíche de frango crocante estilo McChicken",c:"lanche",e:"🥪",t:25,d:1,r:"1 sanduíche",
+ i:["frango 150g:1 filé de peito de frango","ovo 1un:1 clara","panko:Farinha panko","mussarela:1 fatia de queijo","iogurte 50g:2 colheres de sopa de iogurte natural","limao 1un:½ limão","mostarda:Um pouco de mostarda","cebolinha","alface","pao 1un:1 pão de hambúrguer","sal"],
+ s:["Passe o filé na clara e depois no panko. Air fryer até dourar.","Coloque o queijo por cima e volte até derreter.","Molho: iogurte, limão, um pouco de mostarda, sal e cebolinha.","Monte no pão com alface e o molho."]},
+{id:"7691071458260405522",u:"sarahmbonet",n:"Wrap de cenoura com frango",c:"lanche",e:"🌯",t:30,d:2,r:"2 wraps",a:1,
+ i:["cenoura 2un:2 cenouras grandes raladas fininho","ovo 2un:2 ovos","parmesao 20g:20 g de parmesão","frango 100g:Frango temperado desfiado","requeijao:Requeijão light","alface","tomate 1un:1 tomate","cebolaroxa:Cebola roxa"],
+ s:["Misture cenoura ralada, ovos e parmesão. Espalhe numa camada fina numa assadeira com papel-manteiga.","Asse a 200 °C por uns 20 minutos, até firmar.","Recheie com requeijão, frango, alface, tomate e cebola roxa e enrole."]},
+{id:"7672576542358195477",u:"camifood_",n:"Sushi fake de pepino com atum",c:"lanche",e:"🍣",t:15,d:1,r:"1 a 2 porções",a:1,
+ i:["pepino 1un:1 pepino japonês","atum 1un:1 lata de atum","cremecheese 30g:2 colheres de sopa de cream cheese light","tomate 1un:1 tomate pequeno","shoyu","gergelim"],
+ s:["Corte o pepino em tiras finas no comprimento (o descascador ajuda).","Misture o atum com o cream cheese.","Recheie as tiras com o atum e tomate em cubinhos e enrole.","Sirva com shoyu e gergelim."]},
+{id:"7546994378863054085",u:"feedingiana_",n:"Pãozinho de batata recheado",c:"lanche",e:"🥯",t:40,d:2,r:"4 pãezinhos",a:1,
+ i:["batata 250g:250 g de batata cozida","farinhaaveia 35g:35 g de farinha de aveia","azeite:1 colher de sopa de azeite","frango 80g:80 g de frango desfiado","mussarela 60g:60 g de mussarela","ovo 1un:Ovo para pincelar","gergelim","sal"],
+ s:["Amasse a batata e misture a farinha de aveia, o azeite e o sal até dar liga.","Divida em 4, abra cada parte, recheie com frango e mussarela e feche.","Pincele ovo e salpique sementes.","Asse a 200 °C (forno ou air fryer) até dourar, uns 15 a 20 minutos."]},
+{id:"7675159911570918672",u:"febaronee",n:"Toast de frango cremoso (patê de frango)",c:"lanche",e:"🍞",t:30,d:1,r:"5 toasts + sobra de patê",a:1,
+ i:["frango 500g:500 g de peito de frango","milho 1un:1 lata de milho","requeijao 150g:150 g de requeijão light (e um pouco por cima)","cebolinha","pao 5un:5 fatias de pão","mussarela 5un:5 fatias de mussarela","extratotomate:1 colher de sopa de extrato de tomate","oregano","paprica","sal"],
+ s:["Cozinhe e desfie o frango temperado com sal, páprica, alho e extrato de tomate.","Patê: misture o frango, o milho, a cebolinha e o requeijão.","Espalhe nas fatias de pão, coloque um pouco de requeijão, mussarela e orégano.","Air fryer a 190 °C por uns 5 minutos."],
+ tip:"O patê dura uns 4 dias na geladeira e serve de recheio pra sanduíche ou pastel."},
+{id:"7530676663290547462",u:"isabellasasaki",n:"Torta de frango de frigideira",c:"lanche",e:"🥧",t:15,d:1,r:"1 torta",
+ i:["ovo 1un:1 ovo","farinhaaveia 40g:4 colheres de sopa de farinha de aveia","fermento:1 colher de chá de fermento","frango 60g:Frango desfiado","ricota:1 colher de creme de ricota","mussarela:Queijo ralado (opcional)","sal"],
+ s:["Misture o ovo, a aveia e o sal (se ficar grosso, 1 ou 2 colheres de água). Junte o fermento com cuidado.","Numa frigideira pequena untada, coloque queijo ralado no fundo (opcional), metade da massa, o frango, a ricota e o resto da massa.","Fogo baixo, tampado, por alguns minutos. Vire com cuidado e doure o outro lado."]},
+{id:"7677778768039136528",u:"febaronee",n:"Pizza de tortilha",c:"lanche",e:"🍕",t:10,d:1,r:"1 pizza",
+ i:["tortilha 1un:1 tortilha ou Rap10","passata:1 colher de sopa de molho de tomate","mussarela 20g:20 g de mussarela","frango 60g:60 g de frango desfiado","tomate:3 rodelas de tomate","requeijao:1 colher de sopa de requeijão light","parmesao:1 colher de sobremesa de parmesão","oregano"],
+ s:["Monte sobre a tortilha: molho, queijo, frango, tomate, requeijão e parmesão. Finalize com orégano.","Air fryer ou forno até a borda tostar e o queijo derreter, uns 6 a 8 minutos."]},
+{id:"7703278986339699982",u:"jnewtrition",n:"Chips de cebola com parmesão",c:"lanche",e:"🧀",t:30,d:1,r:"4 porções",
+ i:["cebola 2un:2 cebolas brancas pequenas","parmesao 200g:200 g de parmesão ralado","azeite:½ colher de sopa de azeite","alho_po","paprica","sal"],
+ s:["Forno a 200 °C. Forre a assadeira com papel-manteiga (alumínio gruda).","Espalhe o parmesão numa camada fina e uniforme.","Distribua rodelas de cebola de meio centímetro, bem juntinhas, sem sobrepor.","Pincele azeite e tempere.","Asse uns 18 minutos, até dourar. Espere 5 a 10 minutos e quebre em pedaços."]},
+
+/* ---------- CAFÉ DA MANHÃ E LANCHE DA TARDE ---------- */
+{id:"7704797512024100116",u:"raissagiacomin",n:"Bolo de caneca proteico com calda",c:"cafe",e:"☕",t:5,d:1,r:"1 porção",a:1,
+ i:["iogurte 100g:100 g de iogurte natural","whey 30g:20 g de whey de chocolate + 10 g para a calda","farelo 15g:15 g de farelo de aveia","fermento:Uma pitada de fermento","morango 50g:Frutinhas para finalizar"],
+ s:["Misture o iogurte, 20 g de whey, o farelo e o fermento numa caneca.","Micro-ondas por 1min30 a 2 minutos, até firmar.","Calda: 10 g de whey com um pouco de água até virar creme. Cubra o bolo e finalize com as frutas."]},
+{id:"7305182271236082950",u:"letaguiardaily",n:"Panqueca de banana com calda de whey",c:"cafe",e:"🥞",t:10,d:1,r:"1 porção",
+ i:["banana 1un:½ banana amassada","aveia 15g:15 g de aveia","ovo 1un:1 ovo","whey 25g:10 g de whey na massa + 15 g na calda","leitepo 10g:10 g de leite em pó desnatado","morango:Frutinhas"],
+ s:["Misture a banana, a aveia, o ovo e 10 g de whey.","Doure numa frigideira antiaderente dos dois lados.","Calda: 15 g de whey com o leite em pó e água até ficar com textura de brigadeiro. Finalize com frutas."]},
+{id:"7680219857773743381",u:"lucaslacerdanutri",n:"Aveia gelada da noite pro dia",c:"cafe",e:"🥣",t:5,d:1,r:"1 porção",
+ i:["aveia 30g:30 g de aveia em flocos","iogurte 150g:150 g de iogurte desnatado","chia 10g:10 g de chia","whey 30g:30 g de whey (ou leite em pó)","banana 1un:1 fruta a gosto"],
+ s:["Misture aveia, iogurte, chia e whey num pote.","Geladeira de um dia para o outro.","Sirva com a fruta por cima."],
+ tip:"Monte 3 ou 4 potes de uma vez e a semana de café da manhã está resolvida."},
+{id:"7663605546536242450",u:"camilazeballos_",n:"Pote de banana, iogurte e pasta de amendoim",c:"cafe",e:"🍌",t:5,d:1,r:"1 porção",a:1,
+ i:["banana 1un:1 banana bem madura","iogurte 170g:1 copo de iogurte natural","chia 20g:2 colheres de chia","pastaamendoim:1 colher de pasta de amendoim","canela"],
+ s:["Amasse a banana no fundo do pote.","Misture o iogurte com a chia e a canela e coloque por cima.","Finalize com a pasta de amendoim e leve à geladeira até a hora do lanche."]},
+{id:"7694311604392873224",u:"lucaslacerdanutri",n:"Bolinho de chocolate pro café da semana",c:"cafe",e:"🍫",t:30,d:2,r:"6 porções",
+ i:["whey 40g:40 g de whey","cacau 30g:30 g de cacau em pó","ovo 2un:2 ovos","leite 100ml:100 ml de leite desnatado","iogurte 170g:170 g de iogurte integral","farinhaaveia 40g:40 g de farinha de aveia","trigo 40g:40 g de farinha de trigo","fermento:1 colher de sopa de fermento","cocada:Creme de coco para rechear (opcional)"],
+ s:["Misture o whey e o cacau pingando água aos poucos até virar uma pasta lisa.","Junte os ovos, o leite, o iogurte e as farinhas. Por último, o fermento, delicadamente.","Divida em 3 refratários de vidro e asse a 180 °C por uns 10 minutos.","Corte ao meio, umedeça com um pouco de leite, recheie e feche.","Embrulhe e guarde na geladeira por até 5 dias. Fica bom gelado com café."]},
+{id:"7644770548655885576",u:"claracarpegiani",n:"Banana bread sem açúcar",c:"cafe",e:"🍞",t:45,d:2,r:"1 bolo inglês",
+ i:["tamara 7un:7 tâmaras","leite 120ml:½ xícara de leite bem quente","banana 2un:2 bananas","ovo 2un:2 ovos","manteiga:Um pouco de manteiga (menos de ½ xícara)","trigo 120g:1 xícara de farinha de trigo","farinhaaveia 50g:½ xícara de farinha de aveia","aveia:Aveia em flocos para salpicar","fermento:1 colher de sopa de fermento"],
+ s:["Deixe as tâmaras de molho no leite quente (ou 2 minutos no micro-ondas) e bata até virar pasta.","Junte as bananas amassadas, os ovos e a manteiga. Misture e adicione as farinhas e o fermento.","Coloque numa forma de bolo inglês e salpique aveia.","Air fryer a 160 °C por uns 30 minutos."]},
+{id:"7645030266234227989",u:"gui.oliszewski",n:"Creme de arroz proteico com banana",c:"cafe",e:"🍮",t:10,d:1,r:"1 porção",a:1,
+ i:["farinhaarroz 70g:70 g de farinha de arroz","whey 30g:30 g de whey","leitepo 30g:30 g de leite em pó","banana 1un:1 banana","coco 20g:20 g de coco ralado (ou outro topping)"],
+ s:["Dissolva a farinha de arroz em uns 300 ml de água fria e leve ao fogo mexendo até engrossar.","Fora do fogo, misture o whey e o leite em pó.","Sirva com banana em rodelas e coco ralado."]},
+{id:"7667316806146657558",vid:"7667316806146657557",u:"prilar_ap_43",n:"Bolinho de banana com aveia e chocolate",c:"cafe",e:"🧁",t:30,d:1,r:"~8 bolinhos",
+ i:["banana 3un:3 bananas maduras grandes","aveia 90g:1 xícara de aveia em flocos","chocolate 50g:⅓ xícara de chocolate 50% picado","leite 240ml:1 xícara de leite desnatado","fermento:1 colher de chá de fermento","canela","sal"],
+ s:["Amasse as bananas e misture a aveia, o leite, uma pitada de sal e canela.","Junte o chocolate picado e o fermento.","Distribua em forminhas e asse a 180 °C por uns 20 minutos."],
+ tip:"Com um pouquinho de doce de leite, lembra pão de mel."},
+
+/* ---------- DOCES ---------- */
+{id:"7701355694687014164",u:"laraalbertirf",n:"Copo da felicidade de uva e chocolate",c:"doce",e:"🍇",t:15,d:1,r:"1 copo",
+ i:["whey 20g:20 g de whey","leitepo 10g:10 g de leite em pó","uva 100g:100 g de uva sem caroço","chocolate 20g:20 g de chocolate 70%","iogurte 30g:30 g de iogurte natural"],
+ s:["Creme 1: whey, leite em pó e um pouco de água até virar creme. Misture as uvas.","Creme 2: derreta o chocolate e misture ao iogurte.","Intercale as camadas no copo. Se quiser, geladeira por 15 a 30 minutos."]},
+{id:"7488398319316700422",u:"lucaslacerdanutri",n:"Mousse de morango com “leite condensado” fit",c:"doce",e:"🍓",t:20,d:2,r:"1 travessa (ou 2 porções)",
+ i:["iogurte 340g:340 g de iogurte desnatado","morango 200g:200 g de morango (pode ser congelado)","gelatina 6g:6 g de gelatina sem sabor","leitepo 30g:30 g de leite em pó desnatado (cobertura)"],
+ s:["Hidrate a gelatina em 100 ml de água quente.","Bata o iogurte com o morango. Junte a gelatina e bata só um pouco, pra não formar espuma.","Coloque na travessa e leve à geladeira até firmar.","Cobertura: misture o leite em pó com um pouco de água fervendo até virar um creme e espalhe por cima."]},
+{id:"7463169790467689733",u:"lucaslacerdanutri",n:"Sorvete de morango proteico",c:"doce",e:"🍨",t:5,d:1,r:"1 porção",
+ i:["morango 300g:300 g de morango congelado","iogurte 80g:80 ml de iogurte desnatado","whey 30g:30 g de whey (ou leite em pó)"],
+ s:["Bata tudo no processador ou liquidificador até virar um creme.","Sirva na hora."],
+ tip:"Congele morangos de sobra da semana para ter sempre à mão."},
+{id:"7653111458850426132",u:"lucaslacerdanutri",n:"Gelatina cremosa com morango",c:"doce",e:"🍮",t:15,d:1,r:"2 potes",
+ i:["gelatinazero 1un:1 caixinha de gelatina zero de morango","iogurte 170g:170 g de iogurte desnatado","leitepo 30g:30 g de leite em pó desnatado","morango 100g:100 g de morango","adocante"],
+ s:["Prepare a gelatina conforme a embalagem e deixe amornar sem endurecer.","Bata com o iogurte, o leite em pó e adoçante a gosto.","Coloque em potes com morango picado e leve à geladeira até firmar."]},
+{id:"7650168691245567250",u:"_madufit_",n:"Tiramisu de pote",c:"doce",e:"☕",t:10,d:1,r:"1 pote",a:1,
+ i:["iogurte 200g:200 g de iogurte natural","bolachamaria 6un:6 bolachas Maria","whey 30g:30 g de whey (ou leite em pó)","cacau 5g:5 g de cacau em pó","cafe:Um pouco de café","adocante"],
+ s:["Misture o iogurte, o whey e adoçante (ou mel) a gosto.","Molhe as bolachas rapidinho no café.","Intercale bolacha e creme no pote e termine com cacau peneirado.","Geladeira por pelo menos 1 hora."]},
+{id:"7615712974749175053",u:"ale.reeg",n:"Pudim de manga com chia",c:"doce",e:"🥭",t:10,d:1,r:"2 potes",
+ i:["chia 40g:4 colheres de sopa de chia","manga 2un:2 xícaras de manga em cubos","iogurte 120g:½ xícara de iogurte grego","leite 120ml:½ xícara de leite","mel:1 colher de sopa de mel","coco:Coco ralado para finalizar"],
+ s:["Em cada pote, misture 2 colheres de chia com ¼ de xícara de água quente.","Bata a manga, o iogurte, o leite e o mel.","Despeje sobre a chia, misture e leve à geladeira por 30 minutos.","Finalize com manga picada e coco."]},
+{id:"7680935336469433622",u:"hanfoodfit",n:"Blondies de frutas vermelhas e chocolate branco",c:"doce",e:"🍰",t:30,d:2,r:"6 pedaços",a:1,
+ i:["iogurte 120g:120 g de iogurte grego 0%","ovo 2un:2 ovos","farinhaaveia 40g:40 g de farinha de aveia","amido 10g:10 g de amido de milho","whey 35g:35 g de whey de baunilha","fermento:½ colher de chá de fermento","adocante:2 colheres de sopa de adoçante","chocolatebranco 35g:35 g de chocolate branco","frutasvermelhas 110g:110 g de framboesa (ou morango picado)"],
+ s:["Misture o iogurte e os ovos (e baunilha, se tiver).","Junte a aveia, o amido, o whey, o adoçante e o fermento.","Incorpore 25 g de chocolate branco picado e as frutas.","Forma pequena forrada, 180 °C por 20 a 25 minutos. Por cima, os 10 g restantes de chocolate derretido."]},
+{id:"7664388108128980244",u:"luizaventura_0",n:"Palha italiana de Magic Toast",c:"doce",e:"🍬",t:15,d:1,r:"~6 pedaços",a:1,
+ i:["magictoast 6un:6 Magic Toast","leitepo 25g:25 g de leite em pó desnatado","chocolate 45g:45 g de chocolate"],
+ s:["Derreta o chocolate e misture com o leite em pó (pingue um pouco de leite se precisar dar ponto).","Quebre as torradas em pedaços e misture.","Aperte numa forminha forrada, leve à geladeira até firmar e corte em quadrados."]}
+];
+
+/* Vídeos de receita dos seus salvos sem receita escrita na legenda */
+const EXTRAS = [
+ ["dr.riqmonteiro","7652009587767348498","Frango cremoso com tomate, queijo e macarrão"],
+ ["dr.riqmonteiro","7634611238961466642","Frango teriyaki desfiado com maionese picante"],
+ ["dr.riqmonteiro","7551798879201594680","Tigela de frango mexicano com batata"],
+ ["dr.riqmonteiro","7477222909686123831","Nuggets de mel e alho com purê"],
+ ["dr.riqmonteiro","7647539625061354770","Nuggets teriyaki com mel e alho"],
+ ["dr.riqmonteiro","7637894044479147272","Sanduíche de frango frito coreano"],
+ ["dr.riqmonteiro","7459509790197189894","3 níveis de mingau de aveia"],
+ ["sarahmbonet","7649132052524190994","3 saladas de marmita (sushi, macarrão, repolho)"],
+ ["sarahmbonet","7519260616452803845","Bolo de caneca de whey"],
+ ["lucaslacerdanutri","7659413643729177877","Sopa de frango com batata, cenoura e milho"],
+ ["lucaslacerdanutri","7621918728514473223","Salada cremosa de milho"],
+ ["lucaslacerdanutri","7491388064732843270","Salada de batata com molho verde"],
+ ["lucaslacerdanutri","7631194772333432071","Carne moída de outro jeito"],
+ ["lucaslacerdanutri","7693563778285325586","Molhos “Supreme”, “KFC” e “Furioso”"],
+ ["lucaslacerdanutri","7652356097851804936","3 molhos: palhaço, verde e chipotle"],
+ ["lucaslacerdanutri","7690949691046890770","Farofa de cebola caramelizada com flocão"],
+ ["lucaslacerdanutri","7457619415790619910","Sobremesa de frutas para a geladeira"],
+ ["lu.mtsfit","7648017575007374612","Caldo para o jantar"],
+ ["lu.mtsfit","7536229484391894328","Bolinho de chocolate fit com calda"],
+ ["silmara.receitas","7640627972612951314","Creme de mandioca com carne"],
+ ["hanfoodfit","7646425593369611542","Frango sal e pimenta com batata na air fryer"],
+ ["hanfoodfit","7644573849249418518","Bowl de cheeseburger"],
+ ["stealth_health_life","7337068401505930538","Butter chicken para meal prep"],
+ ["benmoore_coach","7664529268256427284","Brownie proteico com cookie"],
+ ["maytesaretti","7659448165225090324","Salada com frango crocante"],
+ ["nona.foodstory","7640320176222670093","Salada crocante de verão"],
+ ["julianoogf","7704703968114494728","Receita prática em menos de 30 minutos"],
+ ["julianoogf","7664674336967560466","Frango marinado no iogurte com especiarias"],
+ ["vitorporpino","7668712327138528533","Prato proteico em 30 minutos"],
+ ["vitorporpino","7675757018849824020","Sanduíche de frango com molho de manjericão"],
+ ["ericknaoki_","7673618524199341332","Tulipa de frango agridoce com saladas"],
+ ["nicoletferrari","7677708394282716434","Frango moído empanado na air fryer"],
+ ["fiscampos","7698110479423556884","Marmitas: mignon suíno e purê de abóbora"],
+ ["prilar_ap_43","7668436523552902420","Ragu de carne que rende a semana"],
+ ["febaronee","7677778768039136528","Lanchinhos para congelar (kibe de quinoa, pastel…)"],
+ ["minawinkel","7693733915495877908","Café da manhã proteico sem carboidrato"],
+ ["eizo.quasenutri","7698043921745579280","Overnight oats"],
+ ["jaanathoen","7698364958874012948","Café da manhã pronto para a semana"],
+ ["kassiarosaof","7691332899974565138","Tapioca crocante"],
+ ["lizspina","7675512525017992469","Pastelzinho fit"],
+ ["receitasdoyan","7675465077641973012","Creme de ricota caseiro"],
+ ["renatabrugnera","7674262818363018517","Pudim sem açúcar"],
+ ["dudaapaim","7665090944575868168","4 ideias de lanche"],
+ ["reviskitchenn","7698462032781184270","Ideias de almoço para a semana"],
+ ["letaguiardaily","7276931858330406149","Pão com ovo"]
+];
+
+const CAT = {
+  almoco:{s:"Almoço",pl:"Almoços",hint:"Rendem marmitas: dá pra fazer tudo num dia de preparo."},
+  lanche:{s:"Lanche ou jantar",pl:"Lanches e jantares",hint:"Mais rápidos, bons pra noite."},
+  cafe:{s:"Café ou lanche da tarde",pl:"Café da manhã e lanche da tarde",hint:"Vários dá pra deixar prontos na geladeira."},
+  doce:{s:"Doce",pl:"Doce da semana",hint:"Pra quando bater vontade."}
+};
+const DIF = {1:"fácil",2:"médio"};
+const SKIP_SCORE = new Set(["cebola","alho"]);
+
+/* ============ LÓGICA ============ */
+function parseIng(str){
+  const idx = str.indexOf(":");
+  const left = idx>=0 ? str.slice(0,idx) : str;
+  const txt = idx>=0 ? str.slice(idx+1).trim() : null;
+  const [key, amt] = left.trim().split(/\s+/);
+  let q=null,u=null;
+  if(amt){ const m = amt.match(/^([\d.]+)(g|ml|un)$/); if(m){ q=+m[1]; u=m[2]; } }
+  return {key,q,u,txt};
+}
+R.forEach(r=>{
+  r.ings = r.i.map(parseIng);
+  r.keys = [...new Set(r.ings.map(x=>x.key).filter(k=>K[k] && K[k][1]!=="desp" && !SKIP_SCORE.has(k)))];
+  r.vid = r.vid || r.id;
+});
+const BY = Object.fromEntries(R.map(r=>[r.id,r]));
+function ingText(x){
+  if(x.txt) return x.txt;
+  const nm = K[x.key] ? K[x.key][0] : x.key;
+  if(x.q==null) return nm + " a gosto";
+  return x.u==="un" ? `${x.q} ${nm.toLowerCase()}` : `${fmtQ(x.q,x.u)} de ${nm.toLowerCase()}`;
+}
+function fmtNum(n){ return (Math.round(n*10)/10).toString().replace(".",","); }
+function fmtQ(q,u){
+  if(u==="g") return q>=1000 ? fmtNum(q/1000)+" kg" : Math.round(q)+" g";
+  if(u==="ml") return q>=1000 ? fmtNum(q/1000)+" L" : Math.round(q)+" ml";
+  return fmtNum(q)+" un";
+}
+function hash(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function rng(seed){ let a=seed||1; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+const STORE_KEY="cardapio-v1";
+function load(){ try{ const v=localStorage.getItem(STORE_KEY); if(v) return JSON.parse(v); }catch(e){} return null; }
+let S = load() || {weeks:{}, checks:{}, nAlmoco:2};
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} }
+
+function mondayOf(offset){ const d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)+offset*7); return d; }
+function keyOf(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+function weekLabel(mon){ const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  return mon.getMonth()===sun.getMonth() ? `${mon.getDate()} a ${sun.getDate()} de ${MESES[sun.getMonth()]}` : `${mon.getDate()} de ${MESES[mon.getMonth()]} a ${sun.getDate()} de ${MESES[sun.getMonth()]}`; }
+function quota(){ return {almoco:S.nAlmoco, lanche:3, cafe:2, doce:1}; }
+
+function scoreOf(r, chosen, rnd, recent){
+  let sh=0, nw=0;
+  r.keys.forEach(k=> chosen.has(k) ? sh++ : nw++);
+  const base = chosen.size ? sh*1.0 - nw*0.3 : 0;
+  return base + rnd()*1.6 - (recent.has(r.id)?1.5:0);
+}
+function keysOfPlan(plan, exceptId){ const s=new Set(); Object.values(plan).flat().forEach(id=>{ if(id!==exceptId && BY[id]) BY[id].keys.forEach(k=>s.add(k)); }); return s; }
+function recentOf(wk){ const d=new Date(wk+"T12:00:00"); d.setDate(d.getDate()-7); const p=S.weeks[keyOf(d)]; return new Set(p ? Object.values(p.plan).flat() : []); }
+
+function generate(wk, seedN, keepLocked){
+  const rnd = rng(hash(wk+"|"+seedN));
+  const recent = recentOf(wk);
+  const old = S.weeks[wk];
+  const locked = keepLocked && old ? old.locked.filter(id=>BY[id]) : [];
+  const plan = {almoco:[],lanche:[],cafe:[],doce:[]};
+  locked.forEach(id=>{ const c=BY[id].c; if(plan[c].length<quota()[c]) plan[c].push(id); });
+  const q = quota();
+  for(const c of ["almoco","lanche","cafe","doce"]){
+    while(plan[c].length < q[c]){
+      const chosen = keysOfPlan(plan);
+      const used = new Set(Object.values(plan).flat());
+      const cands = R.filter(r=>r.c===c && !used.has(r.id));
+      if(!cands.length) break;
+      let best=null, bs=-1e9;
+      cands.forEach(r=>{ const sc=scoreOf(r,chosen,rnd,recent); if(sc>bs){bs=sc;best=r;} });
+      plan[c].push(best.id);
+    }
+  }
+  S.weeks[wk] = {plan, locked: locked.filter(id=>Object.values(plan).flat().includes(id)), seed:seedN};
+  save();
+}
+function swap(wk, id){
+  const w=S.weeks[wk]; const c=BY[id].c; const pos=w.plan[c].indexOf(id); if(pos<0) return;
+  const chosen=keysOfPlan(w.plan,id); const used=new Set(Object.values(w.plan).flat());
+  const cands=R.filter(r=>r.c===c && !used.has(r.id));
+  if(!cands.length){ toast("Não há outra opção nessa categoria"); return; }
+  let best=null,bs=-1e9; cands.forEach(r=>{ const sc=scoreOf(r,chosen,Math.random,recentOf(wk)); if(sc>bs){bs=sc;best=r;} });
+  w.plan[c][pos]=best.id; w.locked=w.locked.filter(x=>x!==id); save();
+}
+function ensureWeek(wk){
+  const w=S.weeks[wk]; const q=quota();
+  if(!w){ generate(wk,0,false); return; }
+  const ok = Object.keys(q).every(c=> (w.plan[c]||[]).length===q[c] && w.plan[c].every(id=>BY[id]));
+  if(!ok){ // número de almoços mudou: completa ou corta mantendo o que já existe
+    const keep = (w.locked||[]).slice();
+    Object.keys(q).forEach(c=>{ w.plan[c]=(w.plan[c]||[]).filter(id=>BY[id]).slice(0,q[c]); });
+    w.locked = Object.values(w.plan).flat();
+    generate(wk, w.seed||0, true);
+    const now = Object.values(S.weeks[wk].plan).flat();
+    S.weeks[wk].locked = keep.filter(id=>now.includes(id));
+    save();
+  }
+}
+
+function shoppingFor(plan){
+  const m=new Map();
+  Object.values(plan).flat().forEach(id=>{ const r=BY[id]; if(!r) return;
+    r.ings.forEach(x=>{ if(!K[x.key]) return;
+      if(!m.has(x.key)) m.set(x.key,{key:x.key,amt:{},vague:false,recipes:new Set()});
+      const e=m.get(x.key); e.recipes.add(r.n);
+      if(x.q!=null) e.amt[x.u]=(e.amt[x.u]||0)+x.q; else e.vague=true;
+    });
+  });
+  return [...m.values()];
+}
+function amtText(e){
+  const parts=Object.entries(e.amt).map(([u,q])=>fmtQ(q,u));
+  if(!parts.length) return "";
+  return parts.join(" + ") + (e.vague?" +":"");
+}
+
+/* ============ INTERFACE ============ */
+let weekOffset = 0;
+let libFilter = "todas", libQuery = "";
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ICON = {
+  swap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg>',
+  pinOn:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5" fill="none"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg>',
+  prev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  next:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+  dice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+};
+function curWeek(){ const mon=mondayOf(weekOffset); const wk=keyOf(mon); ensureWeek(wk); return {mon,wk,w:S.weeks[wk]}; }
+
+function renderWeek(){
+  const {mon,wk,w}=curWeek();
+  const all=Object.values(w.plan).flat();
+  const count={}; all.forEach(id=>BY[id].keys.forEach(k=>count[k]=(count[k]||0)+1));
+  const shared=Object.entries(count).filter(([,n])=>n>1).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const items=shoppingFor(w.plan).filter(e=>K[e.key][1]!=="desp").length;
+  const alm=w.plan.almoco.map(id=>BY[id]); const longest=[...alm].sort((a,b)=>b.t-a.t)[0];
+  const title = weekOffset===0 ? "Esta semana" : weekOffset===1 ? "Próxima semana" : weekOffset===-1 ? "Semana passada" : "Semana";
+  let h = `<div class="top">
+    <button class="iconbtn" data-act="prevw" aria-label="Semana anterior">${ICON.prev}</button>
+    <h1 id="t-semana">${title}</h1>
+    <button class="iconbtn" data-act="nextw" aria-label="Próxima semana">${ICON.next}</button></div>
+  <p class="sub">${weekLabel(mon)}. ${R.length} receitas dos seus salvos no TikTok.</p>
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Quantos almoços">
+      <button data-act="nalm" data-n="2" aria-pressed="${S.nAlmoco===2}">2 almoços</button>
+      <button data-act="nalm" data-n="3" aria-pressed="${S.nAlmoco===3}">3 almoços</button>
+    </div>
+    <button class="btn" data-act="reroll">${ICON.dice} Sortear outro cardápio</button>
+  </div>
+  <div class="start">
+    <h2>Por onde começar</h2>
+    <ol>
+      <li><b>Faça as compras:</b> <a href="#compras">${items} itens na lista</a>, já somando tudo que se repete.</li>
+      <li><b>No dia de preparo</b> (domingo, por exemplo), faça os almoços e divida em marmitas. Comece por ${esc(longest.n.toLowerCase())}, que leva mais tempo (${longest.t} min).</li>
+      <li><b>Deixe pronto também</b> o café da manhã: ${w.plan.cafe.map(id=>esc(BY[id].n.toLowerCase())).join(" e ")}.</li>
+      <li><b>Durante a semana</b>, alterne os lanches à noite e guarde o doce pra quando bater vontade.</li>
+    </ol>
+    ${shared.length?`<div class="shared" aria-label="Ingredientes que se repetem">${shared.map(([k,n])=>`<span class="pill">${esc(K[k][0])} em ${n} receitas</span>`).join("")}</div>`:""}
+  </div>`;
+  for(const c of ["almoco","lanche","cafe","doce"]){
+    h += `<section class="meal c-${c}"><h2>${CAT[c].pl}</h2><p class="hint">${CAT[c].hint}</p>`;
+    w.plan[c].forEach(id=>{
+      const r=BY[id]; const locked=w.locked.includes(id);
+      const others=new Set(all.filter(x=>x!==id).flatMap(x=>BY[x].keys));
+      const common=r.keys.filter(k=>others.has(k)).slice(0,3).map(k=>K[k][0].split(" (")[0].split(" /")[0].toLowerCase());
+      h += `<article class="dish ${locked?"locked":""}">
+        <button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}</span><span>
+          <span class="dish-name">${esc(r.n)}</span>
+          <span class="dish-meta">${r.t} min, ${DIF[r.d]}, ${esc(r.r)}</span>
+          ${common.length?`<span class="dish-also">Reaproveita: ${esc(common.join(", "))}</span>`:""}
+        </span></button>
+        <div class="act">
+          <button data-act="swap" data-id="${r.id}" aria-label="Trocar ${esc(r.n)}" title="Trocar">${ICON.swap}</button>
+          <button data-act="lock" data-id="${r.id}" aria-pressed="${locked}" aria-label="${locked?"Desafixar":"Fixar"} ${esc(r.n)}" title="${locked?"Fixada: não muda ao sortear":"Fixar"}">${locked?ICON.pinOn:ICON.pin}</button>
+        </div></article>`;
+    });
+    h += `</section>`;
+  }
+  $("#v-semana").innerHTML = h;
+}
+
+function renderShop(){
+  const {mon,wk,w}=curWeek();
+  const list=shoppingFor(w.plan);
+  const checks=S.checks[wk]||{};
+  const main=list.filter(e=>K[e.key][1]!=="desp");
+  const done=main.filter(e=>checks[e.key]).length;
+  const row=e=>`<li><label><input type="checkbox" data-check="${e.key}" ${checks[e.key]?"checked":""}><span>
+      <span class="item"><b>${esc(K[e.key][0])}</b> ${amtText(e)?`<span class="qty">${amtText(e)}</span>`:""}</span>
+      <span class="uses">${esc([...e.recipes].join(", "))}</span></span></label></li>`;
+  let h=`<div class="note"><h1>Lista do mercado</h1>
+    <p class="prog">${weekLabel(mon)}: ${done} de ${main.length} no carrinho</p>
+    <div class="bar"><i style="width:${main.length?Math.round(done/main.length*100):0}%"></i></div>`;
+  SECTIONS.forEach(([sec,label])=>{
+    const its=main.filter(e=>K[e.key][1]===sec).sort((a,b)=>K[a.key][0].localeCompare(K[b.key][0],"pt"));
+    if(its.length) h+=`<h3>${label}</h3><ul>${its.map(row).join("")}</ul>`;
+  });
+  const pantry=list.filter(e=>K[e.key][1]==="desp").sort((a,b)=>K[a.key][0].localeCompare(K[b.key][0],"pt"));
+  if(pantry.length) h+=`<details class="pantry"><summary>Temperos e despensa: confira se já tem (${pantry.length})</summary><ul>${pantry.map(row).join("")}</ul></details>`;
+  h+=`<div class="listtools"><button class="btn" data-act="copy">Copiar lista</button><button class="btn ghost" data-act="clearchecks">Desmarcar tudo</button></div>
+    <p class="uses" style="margin-top:14px">As quantidades somam o que as receitas pedem. “+” no fim quer dizer que alguma receita usa mais “a gosto”.</p></div>`;
+  $("#v-compras").innerHTML=h;
+}
+
+function renderLib(){
+  const q=libQuery.trim().toLowerCase();
+  const list=R.filter(r=>(libFilter==="todas"||r.c===libFilter) && (!q || (r.n+" "+r.i.join(" ")).toLowerCase().includes(q)));
+  const chips=[["todas","Todas"],["almoco","Almoço"],["lanche","Lanche ou jantar"],["cafe","Café e tarde"],["doce","Doces"]];
+  let h=`<div class="top"><h1>Receitas</h1></div>
+   <p class="sub">Tudo que tem receita escrita nos seus salvos. Toque pra abrir.</p>
+   <input class="search" type="search" placeholder="Buscar por nome ou ingrediente (ex.: frango, banana)" value="${esc(libQuery)}" data-act="search" aria-label="Buscar receitas">
+   <div class="chips" role="group" aria-label="Filtrar">${chips.map(([k,l])=>`<button data-act="filter" data-f="${k}" aria-pressed="${libFilter===k}">${l}</button>`).join("")}</div>
+   <p class="libcount">${list.length} receita${list.length===1?"":"s"}</p><div id="liblist">`;
+  h+= list.length ? list.map(r=>`<article class="dish c-${r.c}"><button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}</span><span>
+      <span class="dish-name">${esc(r.n)}</span><span class="dish-meta">${CAT[r.c].s}, ${r.t} min, ${DIF[r.d]}</span></span></button></article>`).join("")
+    : `<p class="sub">Nenhuma receita com “${esc(libQuery)}”. Tente outro ingrediente.</p>`;
+  h+=`</div><section class="extras"><h2>Outros vídeos de receita nos seus salvos</h2>
+    <p>Esses não têm a receita escrita na legenda, então ficam só com o link pro vídeo.</p>
+    <ul>${EXTRAS.map(([u,id,t])=>`<li><a href="https://www.tiktok.com/@${u}/video/${id}" target="_blank" rel="noopener">${esc(t)}</a><small>@${esc(u)}</small></li>`).join("")}</ul></section>`;
+  $("#v-receitas").innerHTML=h;
+}
+
+function openRecipe(id){
+  const r=BY[id]; const url=`https://www.tiktok.com/@${r.u}/video/${r.vid}`;
+  $("#sheet-body").innerHTML=`<div class="sheet-top"><button class="iconbtn" data-act="close" aria-label="Fechar">${ICON.close}</button></div>
+    <div class="c-${r.c}"><span class="tile">${r.e}</span></div>
+    <h2 id="sheet-title">${esc(r.n)}</h2>
+    <div class="facts"><span class="fact"><b>${r.t} min</b>tempo</span><span class="fact"><b>${DIF[r.d]}</b>dificuldade</span><span class="fact"><b>${esc(r.r)}</b>rende</span></div>
+    <p class="by">${CAT[r.c].s}, receita de <a href="${url}" target="_blank" rel="noopener">@${esc(r.u)}</a></p>
+    <div class="video"><button class="btn ghost" data-act="video" data-vid="${r.vid}">Ver o vídeo aqui</button> <a class="btn ghost" href="${url}" target="_blank" rel="noopener" style="text-decoration:none">Abrir no TikTok</a><div id="vbox"></div></div>
+    <h3>Ingredientes</h3><ul class="ings">${r.ings.map(x=>`<li>${esc(ingText(x))}</li>`).join("")}</ul>
+    <h3>Modo de preparo</h3><ol class="steps">${r.s.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+    ${r.tip?`<p class="tip">${esc(r.tip)}</p>`:""}
+    ${r.a?`<p class="obs">A legenda não trazia o passo a passo completo, então resumi a partir dela. Vale dar uma olhada no vídeo pra conferir os detalhes.</p>`:""}`;
+  const d=$("#sheet"); if(!d.open) d.showModal(); d.scrollTop=0;
+}
+
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("on"),1800); }
+
+function show(){
+  const v=(location.hash||"#semana").slice(1);
+  const view=["semana","compras","receitas"].includes(v)?v:"semana";
+  ["semana","compras","receitas"].forEach(x=>$("#v-"+x).hidden = x!==view);
+  document.querySelectorAll("nav.tabs a").forEach(a=>{ if(a.dataset.v===view) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  if(view==="semana") renderWeek(); else if(view==="compras") renderShop(); else renderLib();
+}
+
+document.addEventListener("click",e=>{
+  const op=e.target.closest("[data-open]"); if(op){ openRecipe(op.dataset.open); return; }
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const a=b.dataset.act; const {wk,w}=curWeek();
+  if(a==="prevw"){ weekOffset--; renderWeek(); }
+  else if(a==="nextw"){ weekOffset++; renderWeek(); }
+  else if(a==="nalm"){ const n=+b.dataset.n; if(n!==S.nAlmoco){ S.nAlmoco=n; const keep=w.locked.slice(); w.locked=Object.values(w.plan).flat(); w.plan.almoco=w.plan.almoco.slice(0,n); generate(wk,w.seed||0,true); S.weeks[wk].locked=keep.filter(id=>Object.values(S.weeks[wk].plan).flat().includes(id)); save(); renderWeek(); } }
+  else if(a==="reroll"){ generate(wk,(w.seed||0)+1,true); renderWeek(); toast("Cardápio novo! As fixadas ficaram."); }
+  else if(a==="swap"){ swap(wk,b.dataset.id); renderWeek(); }
+  else if(a==="lock"){ const id=b.dataset.id; w.locked = w.locked.includes(id) ? w.locked.filter(x=>x!==id) : [...w.locked,id]; save(); renderWeek(); }
+  else if(a==="copy"){
+    const list=shoppingFor(w.plan); const checks=S.checks[wk]||{};
+    let txt="Lista do mercado ("+weekLabel(mondayOf(weekOffset))+")\n";
+    SECTIONS.forEach(([sec,label])=>{ const its=list.filter(e=>K[e.key][1]===sec && !checks[e.key]); if(its.length) txt+="\n"+label+"\n"+its.map(e=>"- "+K[e.key][0]+(amtText(e)?" ("+amtText(e)+")":"")).join("\n")+"\n"; });
+    (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Lista copiada")).catch(()=>{ prompt("Copie a lista:",txt); });
+  }
+  else if(a==="clearchecks"){ S.checks[wk]={}; save(); renderShop(); }
+  else if(a==="filter"){ libFilter=b.dataset.f; renderLib(); }
+  else if(a==="close"){ $("#sheet").close(); }
+  else if(a==="video"){ $("#vbox").innerHTML=`<iframe src="https://www.tiktok.com/player/v1/${b.dataset.vid}?music_info=0&description=0&rel=0" allow="fullscreen; encrypted-media; picture-in-picture" title="Vídeo da receita"></iframe>`; b.remove(); }
+});
+document.addEventListener("change",e=>{
+  const c=e.target.closest("[data-check]"); if(!c) return;
+  const {wk}=curWeek(); S.checks[wk]=S.checks[wk]||{}; S.checks[wk][c.dataset.check]=c.checked; save(); renderShop();
+});
+document.addEventListener("input",e=>{
+  if(e.target.dataset.act==="search"){ libQuery=e.target.value; const pos=e.target.selectionStart; renderLib(); const s=$(".search"); s.focus(); s.setSelectionRange(pos,pos); }
+});
+$("#sheet").addEventListener("close",()=>{ $("#sheet-body").innerHTML=""; });
+$("#sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") $("#sheet").close(); });
+window.addEventListener("hashchange",()=>{ show(); window.scrollTo(0,0); });
+show();
+</script>
+</body>
+</html>
