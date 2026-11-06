@@ -158,6 +158,15 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 .sheet .tags{margin:12px 0 0}
 .mix{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:600;color:var(--muted)}
 .mix input{accent-color:var(--tomato);width:120px}
+.protbox{flex-basis:100%;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.pb-head{font:700 1rem/1.2 var(--head);margin:0 0 8px}
+.protbox .chips{flex-wrap:wrap;overflow:visible;margin:0 0 10px;padding:0}
+.protbox .chips small{font-weight:500;opacity:.6;margin-left:2px}
+.pb-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pb-label{font-size:.85rem;font-weight:600;color:var(--muted)}
+.pb-sum{margin:10px 0 0;font-size:.9rem;color:var(--muted)}
+.pb-sum.dirty{color:var(--ink);font-weight:600}
+.pb-note{background:color-mix(in srgb,var(--yolk) 16%,var(--surface));border-radius:12px;padding:10px 14px;font-size:.9rem;margin:0 0 22px}
 .tagchips button{font-size:.82rem;padding:5px 12px}
 .tile{position:relative;overflow:hidden}
 .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -258,6 +267,7 @@ const STORE_KEY="cardapio-v1";
 function load(){ try{ const v=localStorage.getItem(STORE_KEY); if(v) return JSON.parse(v); }catch(e){} return null; }
 let S = load() || {weeks:{}, checks:{}, nAlmoco:2};
 if(S.mix==null) S.mix=2;
+if(!Array.isArray(S.protSel)) S.protSel=[]; if(S.protN==null) S.protN=0;
 function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} }
 
 function mondayOf(offset){ const d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)+offset*7); return d; }
@@ -284,20 +294,60 @@ function scoreOf(r, ctx, rnd, recent){
   const kindPen = r.kind && ctx.kinds.has(r.kind) ? m.kind : 0;
   return base + rnd()*m.rnd - kindPen - (recent.has(r.id)?1.5:0);
 }
-function allowed(r, ctx, lastLunch){
+const CATS=["almoco","lanche","cafe","doce"];
+const MAIN=new Set(["almoco","lanche"]);
+function listPt(a){ return a.length<2 ? (a[0]||"") : a.slice(0,-1).join(", ")+" e "+a[a.length-1]; }
+function protCfg(){ return {sel:(S.protSel||[]).filter(p=>PROT.includes(p)), n:S.protN||0}; }
+function sameCfg(a,b){ a=a||{sel:[],n:0}; b=b||{sel:[],n:0}; return a.n===b.n && a.sel.join()===b.sel.join(); }
+function protCount(p){ return R.filter(r=>r.prot===p && MAIN.has(r.c)).length; }
+/* proteínas permitidas na semana (null = sem restrição) */
+function weekProts(cfg, rnd){
+  if(!cfg.n) return null;
+  const k=Math.max(cfg.n, cfg.sel.length), P=cfg.sel.slice();
+  const avail=PROT.filter(p=>!P.includes(p) && protCount(p)>0);
+  const q=quota(), fits=S2=>["almoco","lanche"].every(c=>R.filter(r=>r.c===c && (!r.prot || S2.includes(r.prot))).length>=q[c]);
+  while(P.length<k && avail.length){
+    /* na última escolha, prefere proteínas que fecham a semana inteira */
+    let opts=avail.slice();
+    if(P.length===k-1){ const ok=opts.filter(p=>fits([...P,p])); if(ok.length) opts=ok; }
+    const w=opts.map(p=>Math.sqrt(protCount(p))); let x=rnd()*w.reduce((a,b)=>a+b,0), i=0;
+    while(i<w.length-1 && x>w[i]){ x-=w[i]; i++; }
+    P.push(opts[i]); avail.splice(avail.indexOf(opts[i]),1);
+  }
+  return P;
+}
+function protSummary(cfg){
+  const L=cfg.sel.map(p=>TAGL[p].toLowerCase()), list=listPt(L);
+  if(!cfg.n) return L.length ? `Qualquer proteína, com pelo menos uma receita de ${list}.` : "Qualquer proteína: o sorteio varia sozinho.";
+  const k=Math.max(cfg.n,L.length), extra=k-L.length;
+  if(!L.length) return `${k} proteína${k>1?"s":""} na semana, escolhida${k>1?"s":""} pelo sorteio.`;
+  if(!extra) return `Só ${list} nos almoços e lanches.`;
+  return `${list.charAt(0).toUpperCase()+list.slice(1)} e mais ${extra} proteína${extra>1?"s":""} que o sorteio escolhe.`;
+}
+function protBox(w){
+  const cfg=protCfg(), dirty=!sameCfg(cfg, w.cfg);
+  return `<div class="protbox"><div class="pb-head">Proteínas da semana</div>
+    <div class="chips" role="group" aria-label="Escolher proteínas">${PROT.map(p=>`<button data-act="prot" data-p="${p}" aria-pressed="${cfg.sel.includes(p)}" aria-label="${TAGL[p]}, ${protCount(p)} receitas">${TAGL[p]} <small>${protCount(p)}</small></button>`).join("")}</div>
+    <div class="pb-row"><span class="pb-label">Quantas:</span><div class="seg" role="group" aria-label="Quantas proteínas na semana">${[[0,"Qualquer"],[1,"1"],[2,"2"],[3,"3"]].map(([n,l])=>`<button data-act="protn" data-n="${n}" aria-pressed="${cfg.n===n}">${l}</button>`).join("")}</div></div>
+    <p class="pb-sum${dirty?" dirty":""}">${protSummary(cfg)}${dirty?" Toque em “Sortear outro cardápio” pra aplicar.":""}</p></div>`;
+}
+function allowed(r, ctx, lastLunch, P){
   const m=mixCfg();
-  if(r.prot){ const cap = r.prot in m.cap ? m.cap[r.prot] : m.cap._; if((ctx.prot[r.prot]||0) >= cap) return false; }
+  if(P && MAIN.has(r.c) && r.prot && !P.includes(r.prot)) return false;
+  if(r.prot && !(P && P.includes(r.prot))){ const cap = r.prot in m.cap ? m.cap[r.prot] : m.cap._; if((ctx.prot[r.prot]||0) >= cap) return false; }
   if(S.mix>0 && r.kind && ctx.catKinds.has(r.c+":"+r.kind)) return false;
-  if(lastLunch && r.prot==="fr" && ctx.lunchProts.length && ctx.lunchProts.every(p=>p==="fr")) return false;
+  if(!P && lastLunch && r.prot==="fr" && ctx.lunchProts.length && ctx.lunchProts.every(p=>p==="fr")) return false;
   return true;
 }
 function pickBest(c, plan, rnd, recent, opts){
-  opts=opts||{}; const ctx=ctxOf(plan, opts.except);
+  opts=opts||{}; const ctx=ctxOf(plan, opts.except), P=opts.P||null;
   const used=new Set(Object.values(plan).flat()); if(opts.except) used.add(opts.except);
-  const cands=R.filter(r=>r.c===c && !used.has(r.id));
+  let cands=R.filter(r=>r.c===c && !used.has(r.id));
+  if(opts.only) cands=cands.filter(r=>r.prot===opts.only);
   if(!cands.length) return null;
-  let pool=cands.filter(r=>allowed(r,ctx,opts.lastLunch));
-  if(!pool.length) pool=cands;
+  let pool=cands.filter(r=>allowed(r,ctx,opts.lastLunch,P));
+  if(!pool.length && P && MAIN.has(c)) pool=cands.filter(r=>!r.prot || P.includes(r.prot));
+  if(!pool.length){ pool=cands; if(P && MAIN.has(c) && opts.notes) opts.notes.add(c); }
   let best=null, bs=-1e9; pool.forEach(r=>{ const sc=scoreOf(r,ctx,rnd,recent); if(sc>bs){bs=sc;best=r;} });
   return best;
 }
@@ -309,21 +359,42 @@ function generate(wk, seedN, keepLocked){
   const old = S.weeks[wk];
   const locked = keepLocked && old ? old.locked.filter(id=>BY[id]) : [];
   const plan = {almoco:[],lanche:[],cafe:[],doce:[]};
-  const q = quota();
+  const q = quota(), cfg = protCfg(), P = weekProts(cfg, rnd), notes = new Set(), missing = [];
   locked.forEach(id=>{ const c=BY[id].c; if(plan[c].length<q[c]) plan[c].push(id); });
-  for(const c of ["almoco","lanche","cafe","doce"]){
+  /* garante pelo menos uma receita de cada proteína escolhida */
+  const lanchesDe=p=>R.filter(r=>r.c==="lanche" && r.prot===p).length;
+  const must=(P || cfg.sel).slice().sort((a,b)=>(lanchesDe(a)>0)-(lanchesDe(b)>0));
+  for(const p of must){
+    if(Object.entries(plan).some(([c,ids])=>MAIN.has(c) && ids.some(id=>BY[id].prot===p))) continue;
+    let ok=false;
+    const order = !lanchesDe(p) ? ["almoco"] : rnd()<0.5 ? ["almoco","lanche"] : ["lanche","almoco"];
+    for(const c of order){
+      if(plan[c].length>=q[c]) continue;
+      const best=pickBest(c, plan, rnd, recent, {only:p, P});
+      if(best){ plan[c].push(best.id); ok=true; break; }
+    }
+    if(!ok) missing.push(p);
+  }
+  for(const c of CATS){
     while(plan[c].length < q[c]){
-      const best=pickBest(c, plan, rnd, recent, {lastLunch: c==="almoco" && plan.almoco.length===q.almoco-1});
+      const best=pickBest(c, plan, rnd, recent, {P, notes, lastLunch: c==="almoco" && plan.almoco.length===q.almoco-1});
       if(!best) break;
       plan[c].push(best.id);
     }
   }
-  S.weeks[wk] = {plan, locked: locked.filter(id=>Object.values(plan).flat().includes(id)), seed:seedN};
+  const msgs=[];
+  if(missing.length) msgs.push(`Não coube receita de ${listPt(missing.map(p=>TAGL[p].toLowerCase()))} nesta semana.`);
+  if(notes.size) msgs.push(`Não há receitas suficientes de ${listPt(P.map(p=>TAGL[p].toLowerCase()))} para ${listPt([...notes].map(c=>CAT[c].pl.toLowerCase()))}, então completei com outras proteínas.`);
+  S.weeks[wk] = {plan, locked: locked.filter(id=>Object.values(plan).flat().includes(id)), seed:seedN, cfg, P, notes:msgs};
   save();
 }
 function swap(wk, id){
   const w=S.weeks[wk]; const c=BY[id].c; const pos=w.plan[c].indexOf(id); if(pos<0) return;
-  const best=pickBest(c, w.plan, Math.random, recentOf(wk), {except:id, lastLunch: c==="almoco"});
+  const P=w.P||null, must=P || (w.cfg && w.cfg.sel) || [], p=BY[id].prot;
+  let best=null;
+  if(p && MAIN.has(c) && must.includes(p) && !Object.entries(w.plan).some(([cc,ids])=>MAIN.has(cc) && ids.some(x=>x!==id && BY[x].prot===p)))
+    best=pickBest(c, w.plan, Math.random, recentOf(wk), {except:id, only:p, P});
+  if(!best) best=pickBest(c, w.plan, Math.random, recentOf(wk), {except:id, P, lastLunch: c==="almoco"});
   if(!best){ toast("Não há outra opção nessa categoria"); return; }
   w.plan[c][pos]=best.id; w.locked=w.locked.filter(x=>x!==id); save();
 }
@@ -394,6 +465,7 @@ function renderWeek(){
       <button data-act="nalm" data-n="3" aria-pressed="${S.nAlmoco===3}">3 almoços</button>
     </div>
     <label class="mix"><span>Economia</span><input type="range" min="0" max="4" step="1" value="${S.mix}" data-act="mix" aria-label="Equilíbrio entre economia e variedade" aria-valuetext="${MIX_LABEL[S.mix]}"><span>Variedade</span></label>
+    ${protBox(w)}
     <button class="btn" data-act="reroll">${ICON.dice} Sortear outro cardápio</button>
   </div>
   <div class="start">
@@ -406,6 +478,7 @@ function renderWeek(){
     </ol>
     ${shared.length?`<div class="shared" aria-label="Ingredientes que se repetem">${shared.map(([k,n])=>`<span class="pill">${esc(K[k][0])} em ${n} receitas</span>`).join("")}</div>`:""}
   </div>`;
+  if(w.notes && w.notes.length) h += `<p class="pb-note">${w.notes.map(esc).join(" ")}</p>`;
   for(const c of ["almoco","lanche","cafe","doce"]){
     h += `<section class="meal c-${c}"><h2>${CAT[c].pl}</h2><p class="hint">${CAT[c].hint}</p>`;
     w.plan[c].forEach(id=>{
@@ -517,6 +590,8 @@ document.addEventListener("click",e=>{
     (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Lista copiada")).catch(()=>{ prompt("Copie a lista:",txt); });
   }
   else if(a==="clearchecks"){ S.checks[wk]={}; save(); renderShop(); }
+  else if(a==="prot"){ const p=b.dataset.p; S.protSel = S.protSel.includes(p) ? S.protSel.filter(x=>x!==p) : [...S.protSel,p]; if(S.protN && S.protSel.length>S.protN) S.protN=Math.min(3,S.protSel.length); save(); renderWeek(); }
+  else if(a==="protn"){ S.protN=+b.dataset.n; if(S.protN && S.protSel.length>S.protN) S.protSel=S.protSel.slice(0,S.protN); save(); renderWeek(); }
   else if(a==="tag"){ libTag=b.dataset.t; renderLib(); }
   else if(a==="filter"){ libFilter=b.dataset.f; renderLib(); }
   else if(a==="close"){ $("#sheet").close(); }
