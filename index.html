@@ -151,6 +151,14 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
 .toast.on{opacity:1}
 [hidden]{display:none!important}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.tag{font-size:.72rem;font-weight:600;line-height:1.5;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--ink) 8%,var(--surface));color:var(--muted)}
+.tag.t-fr,.tag.t-ca,.tag.t-po,.tag.t-at,.tag.t-ov{background:color-mix(in srgb,var(--tomato) 16%,var(--surface));color:var(--ink)}
+.tag.t-ve,.tag.t-sa{background:color-mix(in srgb,var(--leaf) 18%,var(--surface));color:var(--ink)}
+.sheet .tags{margin:12px 0 0}
+.mix{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:600;color:var(--muted)}
+.mix input{accent-color:var(--tomato);width:120px}
+.tagchips button{font-size:.82rem;padding:5px 12px}
 .tile{position:relative;overflow:hidden}
 .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .sheet .tile.hero{width:150px;height:200px;border-radius:18px}
@@ -452,6 +460,43 @@ const CAT = {
 const DIF = {1:"fácil",2:"médio"};
 const SKIP_SCORE = new Set(["cebola","alho"]);
 
+const TAGL = {fr:"Frango",ca:"Carne",po:"Porco",at:"Atum",ov:"Ovos",ve:"Vegetariano",or:"Oriental",it:"Italiano",me:"Mediterrâneo",am:"Americano",sa:"Saudável",pr:"Proteico",ri:"Rápido",lc:"Low carb",ss:"Sem açúcar",ma:"Marmita",cg:"Congela bem",af:"Air fryer"};
+const TAG_ORDER = Object.keys(TAGL);
+const PROT = ["fr","ca","po","at","ov"];
+/* tags | tipo de prato (o sorteio evita dois do mesmo tipo na semana) */
+const TG = {
+ "7698747712795118849":"fr sa pr ma|molho", "7702525002565831942":"ov sa ma|salada", "7701715970963901717":"po sa pr ma cg|panela",
+ "7676584171422108949":"fr sa pr ma cg lc|pure", "7678071470836403477":"ca sa pr ma cg|pure", "7671389568326798612":"fr sa pr ma|molho",
+ "7680738024640138516":"ca pr ma cg it|massa", "7629355844110388487":"fr pr ma cg or|arroz", "7668682455515237650":"fr sa pr ma or|assado",
+ "7667316806146657557":"ca sa pr ma cg|pure", "7649405700229074194":"ca sa pr ma lc|torta", "7662390292661767445":"at sa ma|salada",
+ "7670612185822940448":"fr sa pr ma me|bowl", "7647672674117831943":"fr sa pr cg|caldo", "7550320286609034552":"fr sa pr af or lc|assado",
+ "7633801613169151239":"fr pr ma|massa", "7630201935777303828":"fr pr ma|arroz", "7623158508111826184":"fr sa pr ma or|bowl",
+ "7639857005955419399":"fr sa pr ma lc|assado", "7203799109441080622":"ca sa pr lc am|salada", "7703576477392047382":"fr sa pr|molho",
+ "7644269465001135378":"po sa pr ma af lc|assado", "7484267131643710725":"fr pr af or|empanado",
+ "7693242234149276935":"ca pr cg af am|sanduiche", "7701345091465645332":"fr pr cg af|empanado", "7679096385060293909":"fr pr cg af am|empanado",
+ "7639466929232579861":"fr sa pr cg af|empanado", "7671418113258229013":"fr pr af am|sanduiche", "7691071458260405522":"fr sa pr lc|wrap",
+ "7672576542358195477":"at sa pr lc or|frio", "7546994378863054085":"fr sa|paozinho", "7675159911570918672":"fr pr|sanduiche",
+ "7530676663290547462":"fr sa pr|paozinho", "7677778768039136528":"fr it|pizza", "7703278986339699982":"lc|petisco",
+ "7704797512024100116":"pr ss|bolo", "7305182271236082950":"ov sa pr ss|panqueca", "7680219857773743381":"sa pr ss|pote",
+ "7663605546536242450":"sa ss|pote", "7694311604392873224":"pr|bolo", "7644770548655885576":"sa ss|bolo",
+ "7645030266234227989":"pr|pote", "7667316806146657558":"sa|bolo",
+ "7701355694687014164":"pr|pote", "7488398319316700422":"sa pr ss|mousse", "7463169790467689733":"sa pr ss|gelado",
+ "7653111458850426132":"sa ss|mousse", "7650168691245567250":"pr|pote", "7615712974749175053":"sa|pote",
+ "7680935336469433622":"pr|bolo", "7664388108128980244":"|barrinha"
+};
+/* ingredientes que estragam rápido depois de abertos valem mais quando se repetem */
+const W = {iogurte:2,requeijao:2,ricota:2,cremecheese:2,cremeleite:2,cheddar:1.6,massapastel:1.6,espinafre:1.6,alface:1.6,tortilha:1.5,pao:1.5,milho:1.5,morango:1.5,abobora:1.5,repolho:1.5,leite:1.4,tomatecereja:1.3,mussarela:1.3,brocolis:1.3,pepino:1.3,mandioquinha:1.3,cebolinha:1.3,salsinha:1.2};
+/* 0 = máxima economia ... 4 = máxima variedade */
+const MIX = [
+ {econ:1.4, nw:0.45, rnd:1.0, kind:0.8, cap:{fr:4,_:3}},
+ {econ:1.15,nw:0.35, rnd:1.3, kind:1.2, cap:{fr:3,_:2}},
+ {econ:0.9, nw:0.25, rnd:1.7, kind:1.6, cap:{fr:3,_:2}},
+ {econ:0.6, nw:0.15, rnd:2.2, kind:2.2, cap:{fr:2,_:2}},
+ {econ:0.3, nw:0.05, rnd:2.8, kind:3.0, cap:{fr:2,_:1}}
+];
+const MIX_LABEL = ["Máxima economia","Mais economia","Equilibrado","Mais variedade","Máxima variedade"];
+function tagChips(r,n){ const t=r.tags.slice(0,n||99); return t.length ? `<span class="tags">${t.map(x=>`<span class="tag t-${x}">${TAGL[x]}</span>`).join("")}</span>` : ""; }
+
 /* ============ LÓGICA ============ */
 function parseIng(str){
   const idx = str.indexOf(":");
@@ -465,6 +510,12 @@ function parseIng(str){
 R.forEach(r=>{
   r.ings = r.i.map(parseIng);
   r.keys = [...new Set(r.ings.map(x=>x.key).filter(k=>K[k] && K[k][1]!=="desp" && !SKIP_SCORE.has(k)))];
+  const tg=(TG[r.id]||"|").split("|");
+  r.tags=tg[0].split(" ").filter(Boolean); r.kind=tg[1]||"";
+  if(r.t<=15) r.tags.push("ri");
+  if(!r.ings.some(x=>(K[x.key] && K[x.key][1]==="carnes" && x.key!=="ovo") || ["atum","caldo","gelatina","gelatinazero"].includes(x.key))) r.tags.push("ve");
+  r.tags=TAG_ORDER.filter(t=>r.tags.includes(t));
+  r.prot=PROT.find(p=>r.tags.includes(p))||null;
   r.vid = r.vid || r.id;
 });
 const BY = Object.fromEntries(R.map(r=>[r.id,r]));
@@ -486,6 +537,7 @@ function rng(seed){ let a=seed||1; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Ma
 const STORE_KEY="cardapio-v1";
 function load(){ try{ const v=localStorage.getItem(STORE_KEY); if(v) return JSON.parse(v); }catch(e){} return null; }
 let S = load() || {weeks:{}, checks:{}, nAlmoco:2};
+if(S.mix==null) S.mix=2;
 function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} }
 
 function mondayOf(offset){ const d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)+offset*7); return d; }
@@ -495,31 +547,54 @@ function weekLabel(mon){ const sun=new Date(mon); sun.setDate(mon.getDate()+6);
   return mon.getMonth()===sun.getMonth() ? `${mon.getDate()} a ${sun.getDate()} de ${MESES[sun.getMonth()]}` : `${mon.getDate()} de ${MESES[mon.getMonth()]} a ${sun.getDate()} de ${MESES[sun.getMonth()]}`; }
 function quota(){ return {almoco:S.nAlmoco, lanche:3, cafe:2, doce:1}; }
 
-function scoreOf(r, chosen, rnd, recent){
-  let sh=0, nw=0;
-  r.keys.forEach(k=> chosen.has(k) ? sh++ : nw++);
-  const base = chosen.size ? sh*1.0 - nw*0.3 : 0;
-  return base + rnd()*1.6 - (recent.has(r.id)?1.5:0);
+function mixCfg(){ return MIX[S.mix==null?2:S.mix]; }
+function ctxOf(plan, exceptId){
+  const ctx={keys:new Set(), prot:{}, kinds:new Set(), catKinds:new Set(), lunchProts:[]};
+  Object.entries(plan).forEach(([c,ids])=>ids.forEach(id=>{ if(id===exceptId || !BY[id]) return; const r=BY[id];
+    r.keys.forEach(k=>ctx.keys.add(k));
+    if(r.prot) ctx.prot[r.prot]=(ctx.prot[r.prot]||0)+1;
+    if(r.kind){ ctx.kinds.add(r.kind); ctx.catKinds.add(c+":"+r.kind); }
+    if(c==="almoco") ctx.lunchProts.push(r.prot); }));
+  return ctx;
 }
-function keysOfPlan(plan, exceptId){ const s=new Set(); Object.values(plan).flat().forEach(id=>{ if(id!==exceptId && BY[id]) BY[id].keys.forEach(k=>s.add(k)); }); return s; }
+function scoreOf(r, ctx, rnd, recent){
+  const m=mixCfg(); let sh=0, nw=0;
+  r.keys.forEach(k=>{ if(ctx.keys.has(k)) sh+=W[k]||1; else nw++; });
+  const base = ctx.keys.size ? sh*m.econ - nw*m.nw : 0;
+  const kindPen = r.kind && ctx.kinds.has(r.kind) ? m.kind : 0;
+  return base + rnd()*m.rnd - kindPen - (recent.has(r.id)?1.5:0);
+}
+function allowed(r, ctx, lastLunch){
+  const m=mixCfg();
+  if(r.prot){ const cap = r.prot in m.cap ? m.cap[r.prot] : m.cap._; if((ctx.prot[r.prot]||0) >= cap) return false; }
+  if(S.mix>0 && r.kind && ctx.catKinds.has(r.c+":"+r.kind)) return false;
+  if(lastLunch && r.prot==="fr" && ctx.lunchProts.length && ctx.lunchProts.every(p=>p==="fr")) return false;
+  return true;
+}
+function pickBest(c, plan, rnd, recent, opts){
+  opts=opts||{}; const ctx=ctxOf(plan, opts.except);
+  const used=new Set(Object.values(plan).flat()); if(opts.except) used.add(opts.except);
+  const cands=R.filter(r=>r.c===c && !used.has(r.id));
+  if(!cands.length) return null;
+  let pool=cands.filter(r=>allowed(r,ctx,opts.lastLunch));
+  if(!pool.length) pool=cands;
+  let best=null, bs=-1e9; pool.forEach(r=>{ const sc=scoreOf(r,ctx,rnd,recent); if(sc>bs){bs=sc;best=r;} });
+  return best;
+}
 function recentOf(wk){ const d=new Date(wk+"T12:00:00"); d.setDate(d.getDate()-7); const p=S.weeks[keyOf(d)]; return new Set(p ? Object.values(p.plan).flat() : []); }
 
 function generate(wk, seedN, keepLocked){
-  const rnd = rng(hash(wk+"|"+seedN));
+  const rnd = rng(hash(wk+"|"+seedN+"|"+S.mix));
   const recent = recentOf(wk);
   const old = S.weeks[wk];
   const locked = keepLocked && old ? old.locked.filter(id=>BY[id]) : [];
   const plan = {almoco:[],lanche:[],cafe:[],doce:[]};
-  locked.forEach(id=>{ const c=BY[id].c; if(plan[c].length<quota()[c]) plan[c].push(id); });
   const q = quota();
+  locked.forEach(id=>{ const c=BY[id].c; if(plan[c].length<q[c]) plan[c].push(id); });
   for(const c of ["almoco","lanche","cafe","doce"]){
     while(plan[c].length < q[c]){
-      const chosen = keysOfPlan(plan);
-      const used = new Set(Object.values(plan).flat());
-      const cands = R.filter(r=>r.c===c && !used.has(r.id));
-      if(!cands.length) break;
-      let best=null, bs=-1e9;
-      cands.forEach(r=>{ const sc=scoreOf(r,chosen,rnd,recent); if(sc>bs){bs=sc;best=r;} });
+      const best=pickBest(c, plan, rnd, recent, {lastLunch: c==="almoco" && plan.almoco.length===q.almoco-1});
+      if(!best) break;
       plan[c].push(best.id);
     }
   }
@@ -528,10 +603,8 @@ function generate(wk, seedN, keepLocked){
 }
 function swap(wk, id){
   const w=S.weeks[wk]; const c=BY[id].c; const pos=w.plan[c].indexOf(id); if(pos<0) return;
-  const chosen=keysOfPlan(w.plan,id); const used=new Set(Object.values(w.plan).flat());
-  const cands=R.filter(r=>r.c===c && !used.has(r.id));
-  if(!cands.length){ toast("Não há outra opção nessa categoria"); return; }
-  let best=null,bs=-1e9; cands.forEach(r=>{ const sc=scoreOf(r,chosen,Math.random,recentOf(wk)); if(sc>bs){bs=sc;best=r;} });
+  const best=pickBest(c, w.plan, Math.random, recentOf(wk), {except:id, lastLunch: c==="almoco"});
+  if(!best){ toast("Não há outra opção nessa categoria"); return; }
   w.plan[c][pos]=best.id; w.locked=w.locked.filter(x=>x!==id); save();
 }
 function ensureWeek(wk){
@@ -568,7 +641,7 @@ function amtText(e){
 
 /* ============ INTERFACE ============ */
 let weekOffset = 0;
-let libFilter = "todas", libQuery = "";
+let libFilter = "todas", libQuery = "", libTag = "";
 const $ = s=>document.querySelector(s);
 const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ICON = {
@@ -600,6 +673,7 @@ function renderWeek(){
       <button data-act="nalm" data-n="2" aria-pressed="${S.nAlmoco===2}">2 almoços</button>
       <button data-act="nalm" data-n="3" aria-pressed="${S.nAlmoco===3}">3 almoços</button>
     </div>
+    <label class="mix"><span>Economia</span><input type="range" min="0" max="4" step="1" value="${S.mix}" data-act="mix" aria-label="Equilíbrio entre economia e variedade" aria-valuetext="${MIX_LABEL[S.mix]}"><span>Variedade</span></label>
     <button class="btn" data-act="reroll">${ICON.dice} Sortear outro cardápio</button>
   </div>
   <div class="start">
@@ -622,6 +696,7 @@ function renderWeek(){
         <button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}${cover(r)}</span><span>
           <span class="dish-name">${esc(r.n)}</span>
           <span class="dish-meta">${r.t} min, ${DIF[r.d]}, ${esc(r.r)}</span>
+          ${tagChips(r,4)}
           ${common.length?`<span class="dish-also">Reaproveita: ${esc(common.join(", "))}</span>`:""}
         </span></button>
         <div class="act">
@@ -659,16 +734,18 @@ function renderShop(){
 
 function renderLib(){
   const q=libQuery.trim().toLowerCase();
-  const list=R.filter(r=>(libFilter==="todas"||r.c===libFilter) && (!q || (r.n+" "+r.i.join(" ")).toLowerCase().includes(q)));
+  const list=R.filter(r=>(libFilter==="todas"||r.c===libFilter) && (!libTag || r.tags.includes(libTag)) && (!q || (r.n+" "+r.i.join(" ")+" "+r.tags.map(t=>TAGL[t]).join(" ")).toLowerCase().includes(q)));
   const chips=[["todas","Todas"],["almoco","Almoço"],["lanche","Lanche ou jantar"],["cafe","Café e tarde"],["doce","Doces"]];
+  const tagsAvail=TAG_ORDER.filter(t=>R.some(r=>r.tags.includes(t)));
   let h=`<div class="top"><h1>Receitas</h1></div>
    <p class="sub">Tudo que tem receita escrita nos seus salvos. Toque pra abrir.</p>
-   <input class="search" type="search" placeholder="Buscar por nome ou ingrediente (ex.: frango, banana)" value="${esc(libQuery)}" data-act="search" aria-label="Buscar receitas">
-   <div class="chips" role="group" aria-label="Filtrar">${chips.map(([k,l])=>`<button data-act="filter" data-f="${k}" aria-pressed="${libFilter===k}">${l}</button>`).join("")}</div>
+   <input class="search" type="search" placeholder="Buscar por nome, ingrediente ou tag (ex.: frango, oriental)" value="${esc(libQuery)}" data-act="search" aria-label="Buscar receitas">
+   <div class="chips" role="group" aria-label="Filtrar por refeição">${chips.map(([k,l])=>`<button data-act="filter" data-f="${k}" aria-pressed="${libFilter===k}">${l}</button>`).join("")}</div>
+   <div class="chips tagchips" role="group" aria-label="Filtrar por tag"><button data-act="tag" data-t="" aria-pressed="${!libTag}">Todas as tags</button>${tagsAvail.map(t=>`<button data-act="tag" data-t="${t}" aria-pressed="${libTag===t}">${TAGL[t]}</button>`).join("")}</div>
    <p class="libcount">${list.length} receita${list.length===1?"":"s"}</p><div id="liblist">`;
   h+= list.length ? list.map(r=>`<article class="dish c-${r.c}"><button class="dish-open" data-open="${r.id}"><span class="tile">${r.e}${cover(r)}</span><span>
-      <span class="dish-name">${esc(r.n)}</span><span class="dish-meta">${CAT[r.c].s}, ${r.t} min, ${DIF[r.d]}</span></span></button></article>`).join("")
-    : `<p class="sub">Nenhuma receita com “${esc(libQuery)}”. Tente outro ingrediente.</p>`;
+      <span class="dish-name">${esc(r.n)}</span><span class="dish-meta">${CAT[r.c].s}, ${r.t} min, ${DIF[r.d]}</span>${tagChips(r,4)}</span></button></article>`).join("")
+    : `<p class="sub">Nenhuma receita com esse filtro. Tente outra combinação.</p>`;
   h+=`</div><section class="extras"><h2>Outros vídeos de receita nos seus salvos</h2>
     <p>Esses não têm a receita escrita na legenda, então ficam só com o link pro vídeo.</p>
     <ul>${EXTRAS.map(([u,id,t])=>`<li><a href="https://www.tiktok.com/@${u}/video/${id}" target="_blank" rel="noopener">${esc(t)}</a><small>@${esc(u)}</small></li>`).join("")}</ul></section>`;
@@ -681,6 +758,7 @@ function openRecipe(id){
     <div class="c-${r.c}"><span class="tile hero">${r.e}${cover(r)}</span></div>
     <h2 id="sheet-title">${esc(r.n)}</h2>
     <div class="facts"><span class="fact"><b>${r.t} min</b>tempo</span><span class="fact"><b>${DIF[r.d]}</b>dificuldade</span><span class="fact"><b>${esc(r.r)}</b>rende</span></div>
+    ${tagChips(r)}
     <p class="by">${CAT[r.c].s}, receita de <a href="${url}" target="_blank" rel="noopener">@${esc(r.u)}</a></p>
     <div class="video"><button class="btn ghost" data-act="video" data-vid="${r.vid}">Ver o vídeo aqui</button> <a class="btn ghost" href="${url}" target="_blank" rel="noopener" style="text-decoration:none">Abrir no TikTok</a><div id="vbox"></div></div>
     <h3>Ingredientes</h3><ul class="ings">${r.ings.map(x=>`<li>${esc(ingText(x))}</li>`).join("")}</ul>
@@ -719,11 +797,13 @@ document.addEventListener("click",e=>{
     (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Lista copiada")).catch(()=>{ prompt("Copie a lista:",txt); });
   }
   else if(a==="clearchecks"){ S.checks[wk]={}; save(); renderShop(); }
+  else if(a==="tag"){ libTag=b.dataset.t; renderLib(); }
   else if(a==="filter"){ libFilter=b.dataset.f; renderLib(); }
   else if(a==="close"){ $("#sheet").close(); }
   else if(a==="video"){ $("#vbox").innerHTML=`<iframe src="https://www.tiktok.com/player/v1/${b.dataset.vid}?music_info=0&description=0&rel=0" allow="fullscreen; encrypted-media; picture-in-picture" title="Vídeo da receita"></iframe>`; b.remove(); }
 });
 document.addEventListener("change",e=>{
+  if(e.target.dataset.act==="mix"){ S.mix=+e.target.value; const {wk,w}=curWeek(); generate(wk,(w.seed||0)+1,true); renderWeek(); toast(MIX_LABEL[S.mix]+": cardápio novo, as fixadas ficaram."); return; }
   const c=e.target.closest("[data-check]"); if(!c) return;
   const {wk}=curWeek(); S.checks[wk]=S.checks[wk]||{}; S.checks[wk][c.dataset.check]=c.checked; save(); renderShop();
 });
