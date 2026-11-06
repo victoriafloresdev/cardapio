@@ -184,272 +184,11 @@ dialog::backdrop{background:rgba(10,20,14,.55)}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ============ INGREDIENTES (nome, seção da lista) ============ */
-const K = {
-  frango:["Peito de frango","carnes"], sobrecoxa:["Sobrecoxa de frango sem osso","carnes"],
-  carnemoida:["Carne moída magra (patinho)","carnes"], patinho:["Patinho ou músculo em cubos","carnes"],
-  paleta:["Paleta suína","carnes"], mignonsuino:["Filé-mignon suíno","carnes"], ovo:["Ovos","carnes"],
-  leite:["Leite desnatado","frios"], iogurte:["Iogurte natural ou desnatado","frios"], mussarela:["Mussarela (light)","frios"],
-  parmesao:["Parmesão ralado","frios"], requeijao:["Requeijão light","frios"], ricota:["Creme de ricota light","frios"],
-  cremecheese:["Cream cheese light","frios"], cremeleite:["Creme de leite leve","frios"], cheddar:["Cheddar light","frios"],
-  manteiga:["Manteiga","frios"], massapastel:["Discos de massa de pastel","frios"],
-  brocolis:["Brócolis","horti"], batata:["Batata inglesa","horti"], mandioquinha:["Mandioquinha (batata-baroa)","horti"],
-  abobora:["Abóbora cabotiá","horti"], cenoura:["Cenoura","horti"], chuchu:["Chuchu","horti"], tomate:["Tomate","horti"],
-  tomatecereja:["Tomate-cereja","horti"], cebola:["Cebola","horti"], cebolaroxa:["Cebola roxa","horti"], alho:["Alho (dentes)","horti"],
-  alhoporo:["Alho-poró","horti"], pimentao:["Pimentão","horti"], pepino:["Pepino japonês","horti"], alface:["Alface","horti"],
-  repolho:["Repolho","horti"], espinafre:["Espinafre","horti"], salsinha:["Salsinha / cheiro-verde","horti"],
-  cebolinha:["Cebolinha","horti"], limao:["Limão","horti"], laranja:["Laranja","horti"], gengibre:["Gengibre","horti"],
-  alecrim:["Alecrim / ervas frescas","horti"], banana:["Banana","horti"], morango:["Morango","horti"], uva:["Uva sem caroço","horti"],
-  manga:["Manga","horti"], frutasvermelhas:["Framboesa ou frutas vermelhas","horti"],
-  macarrao:["Macarrão parafuso","merc"], arroz:["Arroz","merc"], massalasanha:["Massa de lasanha","merc"], tortilha:["Tortilha / Rap10","merc"],
-  pao:["Pão (de forma ou de hambúrguer)","merc"], magictoast:["Magic Toast","merc"], bolachamaria:["Bolacha Maria","merc"],
-  panko:["Farinha panko","merc"], floconmilho:["Flocos de milho sem açúcar","merc"], aveia:["Aveia em flocos","merc"],
-  farelo:["Farelo de aveia","merc"], farinhaaveia:["Farinha de aveia","merc"], farinhaarroz:["Farinha de arroz","merc"],
-  graodebico:["Grão-de-bico cozido","merc"], milho:["Milho em lata","merc"], azeitona:["Azeitona","merc"], picles:["Picles de pepino","merc"],
-  passata:["Molho de tomate / passata","merc"], extratotomate:["Extrato de tomate","merc"], ketchup:["Ketchup","merc"],
-  mostarda:["Mostarda","merc"], maionese:["Maionese light","merc"], shoyu:["Shoyu","merc"], mel:["Mel","merc"],
-  sriracha:["Sriracha / molho de pimenta","merc"], gergelim:["Gergelim","merc"], caldo:["Caldo de frango","merc"],
-  atum:["Atum em lata","merc"], tamara:["Tâmaras","merc"], whey:["Whey protein","merc"], leitepo:["Leite em pó desnatado","merc"],
-  cacau:["Cacau em pó","merc"], chocolate:["Chocolate 50–70%","merc"], chocolatebranco:["Chocolate branco","merc"], chia:["Chia","merc"],
-  pastaamendoim:["Pasta de amendoim","merc"], coco:["Coco ralado","merc"], gelatina:["Gelatina sem sabor","merc"],
-  gelatinazero:["Gelatina zero (caixinha)","merc"], cocada:["Doce ou creme de coco","merc"],
-  trigo:["Farinha de trigo","desp"], amido:["Amido de milho","desp"], molhoingles:["Molho inglês","desp"], vinagrearroz:["Vinagre de arroz","desp"],
-  vinagre:["Vinagre","desp"], cafe:["Café","desp"], fermento:["Fermento em pó","desp"], adocante:["Adoçante","desp"], sal:["Sal","desp"],
-  pimenta:["Pimenta-do-reino","desp"], azeite:["Azeite","desp"], paprica:["Páprica defumada","desp"], alho_po:["Alho em pó","desp"],
-  cebola_po:["Cebola em pó","desp"], oregano:["Orégano / ervas secas","desp"], cominho:["Cominho","desp"], acafrao:["Açafrão / cúrcuma","desp"],
-  lemon:["Lemon pepper","desp"], chimichurri:["Chimichurri","desp"], calabresa:["Pimenta calabresa","desp"], curry:["Curry","desp"],
-  canela:["Canela","desp"], nozmoscada:["Noz-moscada","desp"]
-};
+/* As receitas ficam em receitas.json */
+let K = {};
 const SECTIONS = [["horti","Hortifrúti"],["carnes","Carnes e ovos"],["frios","Laticínios e frios"],["merc","Mercearia"]];
 
-/* ============ RECEITAS DOS SEUS SALVOS ============
-   i: "chave quantidade:texto"  (quantidade em g, ml ou un — vai pra lista de compras)
-   a: 1 = passo a passo resumido por mim (a legenda não tinha o modo de preparo completo) */
-const R = [
-/* ---------- ALMOÇOS / MARMITAS ---------- */
-{id:"7698747712795118849",u:"lucaslacerdanutri",n:"Frango ao molho branco",c:"almoco",e:"🍗",t:30,d:1,r:"3 porções",
- i:["frango 400g:400 g de peito de frango","leite 400ml:400 ml de leite desnatado","amido 10g:10 g de amido de milho (ou farinha de trigo)","parmesao 50g:50 g de parmesão ralado","azeite:1 colher de sopa de azeite","sal","pimenta","nozmoscada","alho_po","cebola_po"],
- s:["Seque o frango com papel-toalha e tempere com sal e pimenta.","Grelhe com o azeite uns 2 minutos de cada lado, só até formar uma crostinha. Reserve: ele termina de cozinhar no molho.","Na mesma frigideira, misture o leite com o amido. Junte o parmesão, a noz-moscada, o alho e a cebola em pó e mexa em fogo baixo até engrossar.","Volte o frango para o molho e cozinhe até ficar bem cozido por dentro."],
- tip:"Fica ótimo com arroz e legumes."},
-{id:"7702525002565831942",u:"lucaslacerdanutri",n:"Salada cremosa de macarrão com brócolis",c:"almoco",e:"🥗",t:30,d:1,r:"2 a 3 porções",
- i:["macarrao 100g:100 g de macarrão (cru)","brocolis 200g:200 g de brócolis","ovo 4un:4 ovos","alface:Alface à vontade","tomatecereja 100g:100 g de tomate-cereja","azeitona 50g:50 g de azeitona","milho 100g:100 g de milho cozido","alhoporo:Alho-poró a gosto","ricota 40g:40 g de creme de ricota light (ou maionese light)","salsinha","azeite:10 g de azeite","sal","paprica","cominho","oregano"],
- s:["Cozinhe o macarrão al dente em água com sal. Aproveite o vapor da mesma panela para cozinhar o brócolis numa peneira até ficar macio, mas firme.","Cozinhe os ovos por uns 10 minutos, descasque e pique.","Leve o milho e o alho-poró à air fryer a 220 °C até dourarem de leve.","Numa tigela grande, junte alface picada, tomates, azeitonas, milho e alho-poró. Acrescente o macarrão, o brócolis e os ovos.","Tempere com sal, páprica, cominho, orégano, o creme de ricota e o azeite. Misture com cuidado e finalize com salsinha."],
- tip:"Pode comer gelada, então funciona bem como marmita."},
-{id:"7701715970963901717",u:"lucaslacerdanutri",n:"Carne de panela de paleta suína",c:"almoco",e:"🍲",t:70,d:2,r:"6 porções",
- i:["paleta 1000g:1 kg de paleta suína em cubos","cebola 1un:1 cebola","alhoporo:½ talo de alho-poró","alho 4un:4 dentes de alho","salsinha","mostarda:3 colheres de sopa de mostarda","alecrim:Alecrim e manjericão a gosto","passata 1un:1 sachê de passata de tomate","tomate 200g:200 g de tomate sem semente","cenoura 200g:200 g de cenoura","sal","paprica","acafrao","calabresa"],
- s:["Doure bem a carne com um fio de azeite na panela de pressão, de todos os lados.","Bata no processador a cebola, o alho-poró, o alho, a salsinha, a mostarda e as ervas até virar uma pasta.","Junte a pasta à carne com a passata, 200 ml de água, os tomates, a cenoura e os temperos. Tampe e cozinhe 40 minutos depois de pegar pressão.","Tire a pressão, separe a carne e desfie. Bata o caldo com os legumes até ficar liso.","Volte tudo para a panela e cozinhe uns 10 minutos em fogo baixo, até engrossar."],
- tip:"Rende bastante: congele em porções."},
-{id:"7676584171422108949",u:"renatabrugnera",n:"Escondidinho de abóbora com frango",c:"almoco",e:"🎃",t:35,d:1,r:"3 marmitas",
- i:["abobora 750g:750 g de abóbora cabotiá","frango 500g:500 g de peito de frango (vira uns 390 g desfiado)","requeijao:3 colheres de sopa de requeijão light","mussarela 60g:60 g de mussarela","cebola 1un:1 cebola","tomate 1un:1 tomate picado","alecrim","sal","pimenta","curry","acafrao","paprica"],
- s:["Cozinhe a abóbora no micro-ondas de 5 em 5 minutos até amassar fácil. Faça um purê com sal, pimenta e alecrim.","Cozinhe e desfie o frango. Refogue com cebola, tomate, sal, pimenta, curry, açafrão e páprica.","Monte nos potes: frango com 1 colher de requeijão, o purê por cima e a mussarela.","Gratine no forno ou na air fryer, ou guarde assim: até 5 dias na geladeira e 30 no freezer."]},
-{id:"7678071470836403477",u:"renatabrugnera",n:"Batata cremosa com carne moída",c:"almoco",e:"🥔",t:35,d:1,r:"3 marmitas",
- i:["batata 750g:750 g de batatas pequenas","carnemoida 400g:400 g de patinho moído","cremeleite 90g:90 g de creme de leite leve (ou requeijão)","mussarela 30g:30 g de mussarela","cebola 1un:1 cebola","salsinha","paprica","sal","pimenta"],
- s:["Cozinhe as batatas só em água até ficarem quase macias.","Doure as batatas dos dois lados numa frigideira com cebola, sal e pimenta.","Refogue a carne moída com cebola, páprica, sal e pimenta.","Molho: misture o creme de leite com a mussarela e a salsinha.","Monte: batata, carne e o molho por cima. Dura 5 dias na geladeira; aqueça na air fryer ou no micro-ondas."]},
-{id:"7671389568326798612",u:"renatabrugnera",n:"Frango com creme de cebola e farofa crocante",c:"almoco",e:"🧅",t:40,d:2,r:"4 porções",
- i:["frango 700g:700 g de peito de frango","maionese:2 colheres de sopa de maionese light","cebola 2un:1 cebola grande + ½ para a farofa","leite 200ml:200 ml de leite desnatado","batata 1un:1 batata grande cozida","panko 30g:30 g de farinha panko","azeite","cebola_po","sal","pimenta"],
- s:["Tempere o frango com a maionese, cebola em pó, sal e pimenta, e grelhe ou asse.","Caramelize a cebola em tiras com uma pitada de sal, em fogo baixo, mexendo sempre.","Bata a cebola caramelizada com o leite e a batata cozida até virar um creme. Misture ao frango.","Farofa: doure ½ cebola em cubos com azeite e sal, junte o panko e mexa até ficar crocante. Finalize por cima."],
- tip:"Vai bem com arroz ou macarrão."},
-{id:"7680738024640138516",u:"anamenezesfit",n:"Lasanha de pote para congelar",c:"almoco",e:"🍝",t:40,d:2,r:"3 potes",a:1,
- i:["carnemoida 500g:500 g de patinho moído","passata 200ml:200 ml de molho de tomate","cebola 1un:1 cebola (roxa ou branca)","alho 2un:2 dentes de alho","ketchup:1 colher de sopa de ketchup","massalasanha 6un:6 folhas de massa de lasanha","requeijao:15 g de requeijão light","mussarela 45g:45 g de mussarela","sal","paprica","pimenta"],
- s:["Refogue a cebola e o alho, junte a carne e doure.","Tempere com sal, páprica e pimenta, adicione o molho de tomate e o ketchup e cozinhe alguns minutos.","Em cada pote, intercale massa e carne (uns 160 g de carne por pote). Finalize com requeijão e mussarela.","Congele. Na hora, asse no forno ou na air fryer até a massa cozinhar e o queijo derreter."]},
-{id:"7629355844110388487",u:"dr.riqmonteiro",n:"Arroz com frango teriyaki e mel",c:"almoco",e:"🍚",t:40,d:2,r:"4 porções (metade da receita original)",
- i:["sobrecoxa 700g:700 g de sobrecoxa sem pele e sem osso","shoyu 45ml:3 colheres de sopa de shoyu","mel 30g:1 ½ colher de sopa de mel","vinagrearroz:1 colher de sopa de vinagre de arroz","alho 2un:2 dentes de alho","arroz 240g:240 g de arroz cru","maionese 50g:50 g de maionese light","sriracha:1 colher de sopa de sriracha","mostarda:½ colher de chá de mostarda","cebolinha","gergelim"],
- s:["Na pressão: frango, shoyu, mel, vinagre, alho e 120 ml de água. Cozinhe 15 minutos depois de pegar pressão, até desfiar fácil.","Tire a pressão, junte o arroz cru e água só até cobrir (uns 250 ml). Cozinhe semi-tampado, mexendo de vez em quando, até o arroz amaciar.","Molho: misture maionese, sriracha, mostarda e um pouco de leite até dar ponto.","Divida em porções com o molho, cebolinha e gergelim."]},
-{id:"7668682455515237650",u:"lucaslacerdanutri",n:"Marmita de frango agridoce com legumes assados",c:"almoco",e:"🥕",t:50,d:2,r:"5 marmitas",a:1,
- i:["frango 700g:700 g de peito de frango em cubos","batata 500g:500 g de batata inglesa","mandioquinha 500g:500 g de mandioquinha","cenoura 300g:300 g de cenoura","milho 120g:120 g de milho","pimentao 1un:Pimentão a gosto","tomatecereja 100g:Tomate-cereja à vontade","shoyu 100ml:100 ml de shoyu light","molhoingles:50 ml de molho inglês","limao 1un:Suco de 1 limão","vinagre:50 ml de vinagre de maçã","mel 20g:20 g de mel","amido 20g:20 g de amido de milho","alho_po","azeite","sal","paprica"],
- s:["Corte batata, mandioquinha, cenoura e pimentão. Tempere com azeite, sal e páprica e asse a 200 °C até dourar (uns 35 minutos).","Tempere o frango e doure na frigideira com um fio de azeite.","Molho: misture shoyu, molho inglês, limão, vinagre, mel, amido e alho em pó. Despeje no frango e mexa até engrossar.","Monte as marmitas com legumes, milho, tomatinhos e frango."]},
-{id:"7667316806146657557",u:"prilar_ap_43",n:"Ragu de patinho com purê de mandioquinha",c:"almoco",e:"🥩",t:70,d:2,r:"5 marmitas",
- i:["patinho 1000g:1 kg de patinho (ou músculo) em cubos","cebola 1un:1 cebola","alho 3un:3 dentes de alho","pimentao 1un:½ pimentão vermelho","tomate 1un:1 tomate","mandioquinha 800g:800 g de mandioquinha","leite 100ml:100 ml de leite desnatado","parmesao 30g:30 g de parmesão ralado","chimichurri","paprica","sal","pimenta"],
- s:["Sele bem a carne na panela de pressão.","Refogue cebola, alho e pimentão. Tempere com sal, chimichurri, páprica e pimenta.","Junte o tomate inteiro, tampe e cozinhe 45 a 50 minutos, até a carne desmanchar. Desfie.","Purê: cozinhe a mandioquinha com sal, bata com o leite e finalize com parmesão.","Marmita: uma camada de purê e outra de ragu."],
- tip:"O ragu também vira recheio de wrap, hambúrguer ou pastel na mesma semana."},
-{id:"7649405700229074194",u:"lucaslacerdanutri",n:"Torta de brócolis com carne",c:"almoco",e:"🥦",t:45,d:2,r:"4 porções",
- i:["brocolis 800g:800 g de brócolis","carnemoida 300g:300 g de carne moída magra","requeijao 60g:60 g de requeijão light","mussarela 60g:60 g de mussarela","salsinha"],
- s:["Cozinhe o brócolis no vapor por uns 10 minutos e pique bem.","Refogue a carne moída com seus temperos.","Monte numa travessa: brócolis bem pressionado, carne, requeijão. Repita. Última camada: brócolis, mussarela e salsinha.","Forno preaquecido a 240 °C por 20 a 30 minutos."],
- tip:"Pressione bem as camadas de brócolis para a torta não desmanchar."},
-{id:"7662390292661767445",u:"lucaslacerdanutri",n:"Salada de batata assada, grão-de-bico e atum",c:"almoco",e:"🐟",t:45,d:1,r:"4 porções",
- i:["batata 400g:400 g de batata","graodebico 150g:150 g de grão-de-bico cozido","tomatecereja 200g:200 g de tomate-cereja","pimentao 50g:50 g de pimentão verde","azeitona 30g:30 g de azeitona (opcional)","atum 1un:1 lata de atum drenado","cebolaroxa:Cebola roxa (opcional)","salsinha","azeite","paprica","alho_po","sal"],
- s:["Corte a batata em cubos e tempere com azeite, páprica, alho em pó e sal.","Asse a 220 °C: 20 minutos coberta com papel-alumínio e mais 20 descoberta.","Misture com grão-de-bico, tomatinhos, pimentão, azeitonas, atum e cheiro-verde."],
- tip:"Pode comer fria. A cebola roxa fica ótima em conserva rápida de vinagre com água."},
-{id:"7670612185822940448",u:"fernandofscacador",n:"Bowl de frango estilo gyros com tzatziki",c:"almoco",e:"🥙",t:45,d:2,r:"4 porções",
- i:["frango 750g:750 g de peito de frango","batata 750g:750 g de batata","iogurte 250g:250 g de iogurte grego light (100 g pro frango, 150 g pro molho)","tomate 2un:2 tomates","pepino 2un:1 ½ pepino","cebola 1un:1 cebola","limao 1un:Suco de limão","alho_po","paprica","oregano","azeite","sal","pimenta"],
- s:["Tempere a batata com sal, pimenta e alho e asse a 180 °C por 30 a 40 minutos.","Marine o frango no iogurte com sal, pimenta, alho, páprica e orégano. Grelhe ou asse.","Salada: tomate, pepino e cebola com sal, orégano e azeite.","Tzatziki: ½ pepino ralado e bem espremido, iogurte, limão e alho.","Monte o bowl com tudo."]},
-{id:"7647672674117831943",u:"yasfernandesrocha",n:"Caldo de frango com batata e chuchu",c:"almoco",e:"🍜",t:40,d:1,r:"4 porções",a:1,
- i:["frango 500g:500 g de peito de frango em cubinhos","batata 600g:3 batatas médias","chuchu 1un:1 chuchu","cebola 1un:½ cebola processada","alho 3un:3 dentes de alho","chimichurri","paprica","azeite","sal"],
- s:["Refogue a cebola e o alho no azeite, junte o frango e doure.","Adicione batata e chuchu em cubinhos, os temperos e 1 litro de água.","Cozinhe até a batata começar a desmanchar (uns 25 minutos na panela comum).","Para ficar mais cremoso, bata uma parte do caldo e volte para a panela."]},
-{id:"7550320286609034552",u:"aprovadopelocasal",n:"Frango com brócolis na air fryer",c:"almoco",e:"🔥",t:35,d:1,r:"2 porções",
- i:["frango 500g:500 g de peito de frango em cubos","brocolis 250g:250 g de brócolis","shoyu 100ml:100 ml de shoyu","mel 20g:20 g de mel","sal","cebola_po","alho_po","paprica"],
- s:["Misture tudo numa tigela.","Air fryer a 180 °C por 30 minutos, mexendo na metade.","Se quiser crocante, suba para 200 °C nos últimos 3 minutos."]},
-{id:"7633801613169151239",u:"dr.riqmonteiro",n:"Macarrão cremoso com frango cajun",c:"almoco",e:"🌶️",t:40,d:2,r:"4 porções (metade da original)",
- i:["frango 500g:500 g de peito de frango","pimentao 2un:2 pimentões em cubos","macarrao 250g:250 g de macarrão","ricota 200g:1 pote (200 g) de creme de ricota light","manteiga:1 colher de chá de manteiga","paprica","alho_po","oregano","sal","pimenta"],
- s:["Doure o frango com um fio de azeite e os temperos.","Junte a manteiga e refogue rapidamente os pimentões.","Cubra com água e cozinhe 20 a 30 minutos, até o frango amaciar. Desfie.","Adicione o macarrão cru e água só até cobrir. Cozinhe até a massa amaciar e o líquido virar um creme.","Misture o creme de ricota e ajuste a textura com um pouco de leite."]},
-{id:"7630201935777303828",u:"renatabrugnera",n:"Arroz com frango e creme de milho",c:"almoco",e:"🌽",t:40,d:1,r:"6 marmitas",a:1,
- i:["frango 1000g:1 kg de peito de frango","milho 2un:2 latas de milho","leite 400ml:400 ml de leite desnatado","amido:2 colheres de sopa de amido de milho","arroz 210g:~210 g de arroz cru (35 g por marmita)","mussarela 60g:60 g de mussarela","cebolinha","sal","pimenta"],
- s:["Cozinhe o frango temperado e desfie ou corte em cubos.","Creme: bata o milho com o leite e o amido e leve ao fogo mexendo até engrossar.","Misture o creme ao frango.","Marmita: 100 g de arroz cozido, 120 g do frango, 10 g de mussarela e cebolinha. Aqueça 2min30 no micro-ondas."]},
-{id:"7623158508111826184",u:"sarahmbonet",n:"Frango ao shoyu com pepino agridoce",c:"almoco",e:"🥒",t:30,d:1,r:"5 marmitas",a:1,
- i:["frango 1000g:1 kg de frango","pepino 500g:500 g de pepino japonês","shoyu 60ml:60 ml de shoyu","extratotomate:1 colher de sopa de extrato de tomate","alho:1 colher de sopa de alho picado","gergelim:2 colheres de sopa de gergelim","mel:1 colher de sopa de mel","vinagrearroz:30 ml de vinagre de arroz","arroz:Arroz a gosto","sal","pimenta","calabresa"],
- s:["Tempere o frango com sal, pimenta, alho, extrato de tomate, shoyu e pimenta líquida. Doure na frigideira e finalize com gergelim.","Pepino: fatie fino e tempere com sal, páprica picante, calabresa, gergelim, mel e vinagre de arroz.","Monte as marmitas com arroz, frango e pepino."]},
-{id:"7639857005955419399",u:"sarahmbonet",n:"Legumes assados com frango cremoso",c:"almoco",e:"🍠",t:50,d:1,r:"5 marmitas",a:1,
- i:["frango 1000g:1 kg de frango","abobora 1un:1 abóbora cabotiá pequena","cebolaroxa 3un:3 cebolas roxas","repolho:½ repolho","tomate 2un:2 tomates sem semente","requeijao:2 ½ colheres de sopa de requeijão light","chimichurri","paprica","lemon","azeite","sal"],
- s:["Corte cebolas, abóbora e repolho em pedaços, tempere com sal, páprica, lemon pepper e azeite e asse a 200 °C até dourar.","Tempere o frango com sal e chimichurri e doure na panela.","Junte o tomate picado e o requeijão e mexa até ficar cremoso.","Monte as marmitas."]},
-{id:"7203799109441080622",u:"thejoeduff",n:"Salada Big Mac",c:"almoco",e:"🍔",t:20,d:1,r:"2 porções grandes",
- i:["carnemoida 450g:450 g de carne moída bem magra","alface 1un:1 alface americana grande","tomatecereja 100g:½ xícara de tomate-cereja","cebola 1un:½ cebola picada","picles 60g:Picles de pepino (uns 60 g)","maionese 120g:120 g de maionese light","ketchup 40g:3 colheres de sopa de ketchup","mostarda:1 colher de sopa de mostarda","vinagre:1 colher de sopa de vinagre","cebola_po","alho_po","paprica","sal"],
- s:["Doure a carne moída e tempere com sal.","Molho: misture maionese, ketchup, mostarda, um pouco de picles picado, vinagre, cebola e alho em pó e páprica.","Monte: alface picada, tomate, cebola, picles e carne. Regue com o molho."]},
-{id:"7703576477392047382",u:"hanfoodfit",n:"Frango cremoso com tomate e espinafre + purê",c:"almoco",e:"🍅",t:45,d:2,r:"2 porções",a:1,
- i:["frango 320g:320 g de peito de frango","cebola 1un:1 cebola","tomatecereja 200g:200 g de tomate-cereja","espinafre:2 punhados de espinafre","extratotomate:1 colher de sopa de extrato de tomate","caldo 200ml:200 ml de caldo de frango","cremecheese 100g:100 g de cream cheese light (40 no molho + 60 no purê)","brocolis 150g:150 g de brócolis","batata 400g:400 g de batata","mostarda:2 colheres de chá de mostarda","leite 40ml:40 ml de leite desnatado","parmesao:Parmesão para finalizar","paprica","oregano","alho_po","sal","pimenta"],
- s:["Tempere o frango com páprica, sal e pimenta, doure e reserve.","Na mesma panela, refogue cebola e alho. Junte os tomates, páprica, orégano e o extrato.","Adicione o caldo, 40 g de cream cheese e o espinafre. Volte o frango e cozinhe até ficar pronto.","Purê: cozinhe a batata e amasse com mostarda, o resto do cream cheese, leite, sal e pimenta.","Sirva com brócolis cozido e um pouco de parmesão."]},
-{id:"7644269465001135378",u:"lucaslacerdanutri",n:"Filé-mignon suíno na air fryer",c:"almoco",e:"🐖",t:45,d:1,r:"~700 g de carne pronta",
- i:["mignonsuino 1000g:1 kg de filé-mignon suíno","mostarda:1 colher de sopa de mostarda","azeite","alecrim","cebola_po","alho_po","cominho","paprica","pimenta","sal"],
- s:["Tempere a carne com tudo e deixe na geladeira por pelo menos 6 horas.","Tire da geladeira 10 minutos antes.","Air fryer a 180 °C por uns 35 minutos.","Fatie ou desfie."],
- tip:"Vira a proteína da semana: com salada, arroz e feijão ou no sanduíche."},
-{id:"7484267131643710725",u:"dr.riqmonteiro",n:"Frango crocante ao molho de laranja e mel",c:"almoco",e:"🍊",t:40,d:2,r:"4 porções (metade da original)",
- i:["frango 600g:600 g de peito de frango em cubos","ovo 1un:1 clara","amido 40g:40 g de amido de milho","laranja 1un:1 laranja grande (suco e raspas)","shoyu 60ml:60 ml de shoyu","mel 30g:30 g de mel","gengibre:1 colher de chá de gengibre ralado","alho 1un:1 dente de alho","vinagrearroz:½ colher de sopa de vinagre de arroz","arroz 260g:260 g de arroz","cebolinha","gergelim","sal"],
- s:["Tempere o frango com pouco sal, misture a clara e sacuda num pote fechado com o amido para empanar.","Air fryer a 200 °C por 8 a 12 minutos com um spray de azeite, até dourar.","Molho: mel, shoyu, vinagre, alho, gengibre e o suco de laranja com uma pitada de amido. Leve ao fogo até engrossar.","Envolva o frango no molho e finalize com cebolinha, raspas de laranja e gergelim. Sirva com arroz."]},
-
-/* ---------- LANCHES E JANTARES LEVES ---------- */
-{id:"7693242234149276935",u:"lucaslacerdanutri",n:"Hot pocket de carne com legumes",c:"lanche",e:"🥟",t:50,d:2,r:"6 unidades",
- i:["carnemoida 300g:300 g de carne moída","brocolis 40g:40 g de brócolis","cenoura 40g:40 g de cenoura","pimentao 20g:20 g de pimentão","cebola:¼ de cebola","alho 3un:3 dentes de alho","farelo 30g:30 g de farelo de aveia","massapastel 12un:12 discos de massa de pastel","ketchup:6 colheres de sopa de ketchup","cheddar 60g:60 g de cheddar light","tomate 1un:6 rodelas de tomate","cebolaroxa:Cebola roxa a gosto","manteiga:5 g de manteiga","ovo 1un:1 gema","acafrao","gergelim","paprica","sal","pimenta"],
- s:["Processe brócolis, cenoura, pimentão, cebola e alho. Misture à carne temperada e ao farelo de aveia. Modele 6 bifinhos de uns 70 g e grelhe.","Sobre 6 discos: ketchup, bifinho, cheddar, tomate e cebola roxa. Cubra com outro disco e aperte bem as bordas.","Pincele manteiga derretida com a gema e uma pitada de açafrão. Salpique gergelim.","Air fryer a 180 °C por uns 15 minutos."],
- tip:"Dá pra congelar cru e assar direto do freezer (uns 20 minutos)."},
-{id:"7701345091465645332",u:"lucaslacerdanutri",n:"Hambúrguer de frango empanado recheado",c:"lanche",e:"🍔",t:40,d:2,r:"6 unidades",a:1,
- i:["frango 400g:400 g de peito de frango","sobrecoxa 200g:200 g de sobrecoxa sem pele e sem osso","cebola 1un:1 cebola","alho 3un:3 dentes de alho (opcional)","mussarela 60g:60 g de mussarela (10 g em cada)","magictoast 12un:2 pacotinhos de Magic Toast (~12 torradas)","parmesao 50g:50 g de parmesão ralado","ovo 2un:2 ovos","sal","paprica","cominho"],
- s:["Triture o frango, a sobrecoxa, a cebola, o alho e os temperos.","Modele 6 hambúrgueres, colocando 10 g de mussarela no meio de cada.","Passe no ovo batido e depois no Magic Toast triturado com parmesão.","Air fryer a 180 °C por 15 a 20 minutos, virando na metade. Ou congele crus."]},
-{id:"7679096385060293909",u:"lucaslacerdanutri",n:"Nuggets de frango crocantes",c:"lanche",e:"🍗",t:35,d:2,r:"8 nuggets",
- i:["frango 500g:500 g de peito de frango","floconmilho 40g:40 g de flocos de milho sem açúcar","parmesao 40g:40 g de parmesão ralado","ovo 1un:1 ovo","acafrao","lemon","calabresa","alho_po","sal"],
- s:["Triture o frango com os temperos e o sal e modele os nuggets.","Deixe no freezer por umas 2 horas para firmar.","Passe no ovo batido e nos flocos de milho triturados com parmesão.","Air fryer a 180 °C por 10 a 15 minutos, com um spray de azeite por cima."],
- tip:"Pode deixar congelado por dias e empanar só na hora."},
-{id:"7639466929232579861",u:"1001_receitasfit",n:"Bolinhos de frango com aveia",c:"lanche",e:"🧆",t:30,d:1,r:"14 unidades",
- i:["frango 500g:500 g de peito de frango","ovo 1un:1 ovo","iogurte 30g:2 colheres de sopa de iogurte natural","farinhaaveia 21g:3 colheres de sopa de farinha de aveia","alho 1un:1 dente de alho","panko 30g:½ xícara de panko","parmesao 30g:⅓ xícara de parmesão","azeite","sal","paprica","lemon"],
- s:["Processe frango, ovo, iogurte, aveia, um fio de azeite, alho e temperos.","Modele bolinhas e empane em panko com parmesão.","Air fryer a 200 °C por 10 a 12 minutos, virando na metade."]},
-{id:"7671418113258229013",u:"isaaoliveiral",n:"Sanduíche de frango crocante estilo McChicken",c:"lanche",e:"🥪",t:25,d:1,r:"1 sanduíche",
- i:["frango 150g:1 filé de peito de frango","ovo 1un:1 clara","panko:Farinha panko","mussarela:1 fatia de queijo","iogurte 50g:2 colheres de sopa de iogurte natural","limao 1un:½ limão","mostarda:Um pouco de mostarda","cebolinha","alface","pao 1un:1 pão de hambúrguer","sal"],
- s:["Passe o filé na clara e depois no panko. Air fryer até dourar.","Coloque o queijo por cima e volte até derreter.","Molho: iogurte, limão, um pouco de mostarda, sal e cebolinha.","Monte no pão com alface e o molho."]},
-{id:"7691071458260405522",u:"sarahmbonet",n:"Wrap de cenoura com frango",c:"lanche",e:"🌯",t:30,d:2,r:"2 wraps",a:1,
- i:["cenoura 2un:2 cenouras grandes raladas fininho","ovo 2un:2 ovos","parmesao 20g:20 g de parmesão","frango 100g:Frango temperado desfiado","requeijao:Requeijão light","alface","tomate 1un:1 tomate","cebolaroxa:Cebola roxa"],
- s:["Misture cenoura ralada, ovos e parmesão. Espalhe numa camada fina numa assadeira com papel-manteiga.","Asse a 200 °C por uns 20 minutos, até firmar.","Recheie com requeijão, frango, alface, tomate e cebola roxa e enrole."]},
-{id:"7672576542358195477",u:"camifood_",n:"Sushi fake de pepino com atum",c:"lanche",e:"🍣",t:15,d:1,r:"1 a 2 porções",a:1,
- i:["pepino 1un:1 pepino japonês","atum 1un:1 lata de atum","cremecheese 30g:2 colheres de sopa de cream cheese light","tomate 1un:1 tomate pequeno","shoyu","gergelim"],
- s:["Corte o pepino em tiras finas no comprimento (o descascador ajuda).","Misture o atum com o cream cheese.","Recheie as tiras com o atum e tomate em cubinhos e enrole.","Sirva com shoyu e gergelim."]},
-{id:"7546994378863054085",u:"feedingiana_",n:"Pãozinho de batata recheado",c:"lanche",e:"🥯",t:40,d:2,r:"4 pãezinhos",a:1,
- i:["batata 250g:250 g de batata cozida","farinhaaveia 35g:35 g de farinha de aveia","azeite:1 colher de sopa de azeite","frango 80g:80 g de frango desfiado","mussarela 60g:60 g de mussarela","ovo 1un:Ovo para pincelar","gergelim","sal"],
- s:["Amasse a batata e misture a farinha de aveia, o azeite e o sal até dar liga.","Divida em 4, abra cada parte, recheie com frango e mussarela e feche.","Pincele ovo e salpique sementes.","Asse a 200 °C (forno ou air fryer) até dourar, uns 15 a 20 minutos."]},
-{id:"7675159911570918672",u:"febaronee",n:"Toast de frango cremoso (patê de frango)",c:"lanche",e:"🍞",t:30,d:1,r:"5 toasts + sobra de patê",a:1,
- i:["frango 500g:500 g de peito de frango","milho 1un:1 lata de milho","requeijao 150g:150 g de requeijão light (e um pouco por cima)","cebolinha","pao 5un:5 fatias de pão","mussarela 5un:5 fatias de mussarela","extratotomate:1 colher de sopa de extrato de tomate","oregano","paprica","sal"],
- s:["Cozinhe e desfie o frango temperado com sal, páprica, alho e extrato de tomate.","Patê: misture o frango, o milho, a cebolinha e o requeijão.","Espalhe nas fatias de pão, coloque um pouco de requeijão, mussarela e orégano.","Air fryer a 190 °C por uns 5 minutos."],
- tip:"O patê dura uns 4 dias na geladeira e serve de recheio pra sanduíche ou pastel."},
-{id:"7530676663290547462",u:"isabellasasaki",n:"Torta de frango de frigideira",c:"lanche",e:"🥧",t:15,d:1,r:"1 torta",
- i:["ovo 1un:1 ovo","farinhaaveia 40g:4 colheres de sopa de farinha de aveia","fermento:1 colher de chá de fermento","frango 60g:Frango desfiado","ricota:1 colher de creme de ricota","mussarela:Queijo ralado (opcional)","sal"],
- s:["Misture o ovo, a aveia e o sal (se ficar grosso, 1 ou 2 colheres de água). Junte o fermento com cuidado.","Numa frigideira pequena untada, coloque queijo ralado no fundo (opcional), metade da massa, o frango, a ricota e o resto da massa.","Fogo baixo, tampado, por alguns minutos. Vire com cuidado e doure o outro lado."]},
-{id:"7677778768039136528",u:"febaronee",n:"Pizza de tortilha",c:"lanche",e:"🍕",t:10,d:1,r:"1 pizza",
- i:["tortilha 1un:1 tortilha ou Rap10","passata:1 colher de sopa de molho de tomate","mussarela 20g:20 g de mussarela","frango 60g:60 g de frango desfiado","tomate:3 rodelas de tomate","requeijao:1 colher de sopa de requeijão light","parmesao:1 colher de sobremesa de parmesão","oregano"],
- s:["Monte sobre a tortilha: molho, queijo, frango, tomate, requeijão e parmesão. Finalize com orégano.","Air fryer ou forno até a borda tostar e o queijo derreter, uns 6 a 8 minutos."]},
-{id:"7703278986339699982",u:"jnewtrition",n:"Chips de cebola com parmesão",c:"lanche",e:"🧀",t:30,d:1,r:"4 porções",
- i:["cebola 2un:2 cebolas brancas pequenas","parmesao 200g:200 g de parmesão ralado","azeite:½ colher de sopa de azeite","alho_po","paprica","sal"],
- s:["Forno a 200 °C. Forre a assadeira com papel-manteiga (alumínio gruda).","Espalhe o parmesão numa camada fina e uniforme.","Distribua rodelas de cebola de meio centímetro, bem juntinhas, sem sobrepor.","Pincele azeite e tempere.","Asse uns 18 minutos, até dourar. Espere 5 a 10 minutos e quebre em pedaços."]},
-
-/* ---------- CAFÉ DA MANHÃ E LANCHE DA TARDE ---------- */
-{id:"7704797512024100116",u:"raissagiacomin",n:"Bolo de caneca proteico com calda",c:"cafe",e:"☕",t:5,d:1,r:"1 porção",a:1,
- i:["iogurte 100g:100 g de iogurte natural","whey 30g:20 g de whey de chocolate + 10 g para a calda","farelo 15g:15 g de farelo de aveia","fermento:Uma pitada de fermento","morango 50g:Frutinhas para finalizar"],
- s:["Misture o iogurte, 20 g de whey, o farelo e o fermento numa caneca.","Micro-ondas por 1min30 a 2 minutos, até firmar.","Calda: 10 g de whey com um pouco de água até virar creme. Cubra o bolo e finalize com as frutas."]},
-{id:"7305182271236082950",u:"letaguiardaily",n:"Panqueca de banana com calda de whey",c:"cafe",e:"🥞",t:10,d:1,r:"1 porção",
- i:["banana 1un:½ banana amassada","aveia 15g:15 g de aveia","ovo 1un:1 ovo","whey 25g:10 g de whey na massa + 15 g na calda","leitepo 10g:10 g de leite em pó desnatado","morango:Frutinhas"],
- s:["Misture a banana, a aveia, o ovo e 10 g de whey.","Doure numa frigideira antiaderente dos dois lados.","Calda: 15 g de whey com o leite em pó e água até ficar com textura de brigadeiro. Finalize com frutas."]},
-{id:"7680219857773743381",u:"lucaslacerdanutri",n:"Aveia gelada da noite pro dia",c:"cafe",e:"🥣",t:5,d:1,r:"1 porção",
- i:["aveia 30g:30 g de aveia em flocos","iogurte 150g:150 g de iogurte desnatado","chia 10g:10 g de chia","whey 30g:30 g de whey (ou leite em pó)","banana 1un:1 fruta a gosto"],
- s:["Misture aveia, iogurte, chia e whey num pote.","Geladeira de um dia para o outro.","Sirva com a fruta por cima."],
- tip:"Monte 3 ou 4 potes de uma vez e a semana de café da manhã está resolvida."},
-{id:"7663605546536242450",u:"camilazeballos_",n:"Pote de banana, iogurte e pasta de amendoim",c:"cafe",e:"🍌",t:5,d:1,r:"1 porção",a:1,
- i:["banana 1un:1 banana bem madura","iogurte 170g:1 copo de iogurte natural","chia 20g:2 colheres de chia","pastaamendoim:1 colher de pasta de amendoim","canela"],
- s:["Amasse a banana no fundo do pote.","Misture o iogurte com a chia e a canela e coloque por cima.","Finalize com a pasta de amendoim e leve à geladeira até a hora do lanche."]},
-{id:"7694311604392873224",u:"lucaslacerdanutri",n:"Bolinho de chocolate pro café da semana",c:"cafe",e:"🍫",t:30,d:2,r:"6 porções",
- i:["whey 40g:40 g de whey","cacau 30g:30 g de cacau em pó","ovo 2un:2 ovos","leite 100ml:100 ml de leite desnatado","iogurte 170g:170 g de iogurte integral","farinhaaveia 40g:40 g de farinha de aveia","trigo 40g:40 g de farinha de trigo","fermento:1 colher de sopa de fermento","cocada:Creme de coco para rechear (opcional)"],
- s:["Misture o whey e o cacau pingando água aos poucos até virar uma pasta lisa.","Junte os ovos, o leite, o iogurte e as farinhas. Por último, o fermento, delicadamente.","Divida em 3 refratários de vidro e asse a 180 °C por uns 10 minutos.","Corte ao meio, umedeça com um pouco de leite, recheie e feche.","Embrulhe e guarde na geladeira por até 5 dias. Fica bom gelado com café."]},
-{id:"7644770548655885576",u:"claracarpegiani",n:"Banana bread sem açúcar",c:"cafe",e:"🍞",t:45,d:2,r:"1 bolo inglês",
- i:["tamara 7un:7 tâmaras","leite 120ml:½ xícara de leite bem quente","banana 2un:2 bananas","ovo 2un:2 ovos","manteiga:Um pouco de manteiga (menos de ½ xícara)","trigo 120g:1 xícara de farinha de trigo","farinhaaveia 50g:½ xícara de farinha de aveia","aveia:Aveia em flocos para salpicar","fermento:1 colher de sopa de fermento"],
- s:["Deixe as tâmaras de molho no leite quente (ou 2 minutos no micro-ondas) e bata até virar pasta.","Junte as bananas amassadas, os ovos e a manteiga. Misture e adicione as farinhas e o fermento.","Coloque numa forma de bolo inglês e salpique aveia.","Air fryer a 160 °C por uns 30 minutos."]},
-{id:"7645030266234227989",u:"gui.oliszewski",n:"Creme de arroz proteico com banana",c:"cafe",e:"🍮",t:10,d:1,r:"1 porção",a:1,
- i:["farinhaarroz 70g:70 g de farinha de arroz","whey 30g:30 g de whey","leitepo 30g:30 g de leite em pó","banana 1un:1 banana","coco 20g:20 g de coco ralado (ou outro topping)"],
- s:["Dissolva a farinha de arroz em uns 300 ml de água fria e leve ao fogo mexendo até engrossar.","Fora do fogo, misture o whey e o leite em pó.","Sirva com banana em rodelas e coco ralado."]},
-{id:"7667316806146657558",vid:"7667316806146657557",u:"prilar_ap_43",n:"Bolinho de banana com aveia e chocolate",c:"cafe",e:"🧁",t:30,d:1,r:"~8 bolinhos",
- i:["banana 3un:3 bananas maduras grandes","aveia 90g:1 xícara de aveia em flocos","chocolate 50g:⅓ xícara de chocolate 50% picado","leite 240ml:1 xícara de leite desnatado","fermento:1 colher de chá de fermento","canela","sal"],
- s:["Amasse as bananas e misture a aveia, o leite, uma pitada de sal e canela.","Junte o chocolate picado e o fermento.","Distribua em forminhas e asse a 180 °C por uns 20 minutos."],
- tip:"Com um pouquinho de doce de leite, lembra pão de mel."},
-
-/* ---------- DOCES ---------- */
-{id:"7701355694687014164",u:"laraalbertirf",n:"Copo da felicidade de uva e chocolate",c:"doce",e:"🍇",t:15,d:1,r:"1 copo",
- i:["whey 20g:20 g de whey","leitepo 10g:10 g de leite em pó","uva 100g:100 g de uva sem caroço","chocolate 20g:20 g de chocolate 70%","iogurte 30g:30 g de iogurte natural"],
- s:["Creme 1: whey, leite em pó e um pouco de água até virar creme. Misture as uvas.","Creme 2: derreta o chocolate e misture ao iogurte.","Intercale as camadas no copo. Se quiser, geladeira por 15 a 30 minutos."]},
-{id:"7488398319316700422",u:"lucaslacerdanutri",n:"Mousse de morango com “leite condensado” fit",c:"doce",e:"🍓",t:20,d:2,r:"1 travessa (ou 2 porções)",
- i:["iogurte 340g:340 g de iogurte desnatado","morango 200g:200 g de morango (pode ser congelado)","gelatina 6g:6 g de gelatina sem sabor","leitepo 30g:30 g de leite em pó desnatado (cobertura)"],
- s:["Hidrate a gelatina em 100 ml de água quente.","Bata o iogurte com o morango. Junte a gelatina e bata só um pouco, pra não formar espuma.","Coloque na travessa e leve à geladeira até firmar.","Cobertura: misture o leite em pó com um pouco de água fervendo até virar um creme e espalhe por cima."]},
-{id:"7463169790467689733",u:"lucaslacerdanutri",n:"Sorvete de morango proteico",c:"doce",e:"🍨",t:5,d:1,r:"1 porção",
- i:["morango 300g:300 g de morango congelado","iogurte 80g:80 ml de iogurte desnatado","whey 30g:30 g de whey (ou leite em pó)"],
- s:["Bata tudo no processador ou liquidificador até virar um creme.","Sirva na hora."],
- tip:"Congele morangos de sobra da semana para ter sempre à mão."},
-{id:"7653111458850426132",u:"lucaslacerdanutri",n:"Gelatina cremosa com morango",c:"doce",e:"🍮",t:15,d:1,r:"2 potes",
- i:["gelatinazero 1un:1 caixinha de gelatina zero de morango","iogurte 170g:170 g de iogurte desnatado","leitepo 30g:30 g de leite em pó desnatado","morango 100g:100 g de morango","adocante"],
- s:["Prepare a gelatina conforme a embalagem e deixe amornar sem endurecer.","Bata com o iogurte, o leite em pó e adoçante a gosto.","Coloque em potes com morango picado e leve à geladeira até firmar."]},
-{id:"7650168691245567250",u:"_madufit_",n:"Tiramisu de pote",c:"doce",e:"☕",t:10,d:1,r:"1 pote",a:1,
- i:["iogurte 200g:200 g de iogurte natural","bolachamaria 6un:6 bolachas Maria","whey 30g:30 g de whey (ou leite em pó)","cacau 5g:5 g de cacau em pó","cafe:Um pouco de café","adocante"],
- s:["Misture o iogurte, o whey e adoçante (ou mel) a gosto.","Molhe as bolachas rapidinho no café.","Intercale bolacha e creme no pote e termine com cacau peneirado.","Geladeira por pelo menos 1 hora."]},
-{id:"7615712974749175053",u:"ale.reeg",n:"Pudim de manga com chia",c:"doce",e:"🥭",t:10,d:1,r:"2 potes",
- i:["chia 40g:4 colheres de sopa de chia","manga 2un:2 xícaras de manga em cubos","iogurte 120g:½ xícara de iogurte grego","leite 120ml:½ xícara de leite","mel:1 colher de sopa de mel","coco:Coco ralado para finalizar"],
- s:["Em cada pote, misture 2 colheres de chia com ¼ de xícara de água quente.","Bata a manga, o iogurte, o leite e o mel.","Despeje sobre a chia, misture e leve à geladeira por 30 minutos.","Finalize com manga picada e coco."]},
-{id:"7680935336469433622",u:"hanfoodfit",n:"Blondies de frutas vermelhas e chocolate branco",c:"doce",e:"🍰",t:30,d:2,r:"6 pedaços",a:1,
- i:["iogurte 120g:120 g de iogurte grego 0%","ovo 2un:2 ovos","farinhaaveia 40g:40 g de farinha de aveia","amido 10g:10 g de amido de milho","whey 35g:35 g de whey de baunilha","fermento:½ colher de chá de fermento","adocante:2 colheres de sopa de adoçante","chocolatebranco 35g:35 g de chocolate branco","frutasvermelhas 110g:110 g de framboesa (ou morango picado)"],
- s:["Misture o iogurte e os ovos (e baunilha, se tiver).","Junte a aveia, o amido, o whey, o adoçante e o fermento.","Incorpore 25 g de chocolate branco picado e as frutas.","Forma pequena forrada, 180 °C por 20 a 25 minutos. Por cima, os 10 g restantes de chocolate derretido."]},
-{id:"7664388108128980244",u:"luizaventura_0",n:"Palha italiana de Magic Toast",c:"doce",e:"🍬",t:15,d:1,r:"~6 pedaços",a:1,
- i:["magictoast 6un:6 Magic Toast","leitepo 25g:25 g de leite em pó desnatado","chocolate 45g:45 g de chocolate"],
- s:["Derreta o chocolate e misture com o leite em pó (pingue um pouco de leite se precisar dar ponto).","Quebre as torradas em pedaços e misture.","Aperte numa forminha forrada, leve à geladeira até firmar e corte em quadrados."]}
-];
-
-/* Vídeos de receita dos seus salvos sem receita escrita na legenda */
-const EXTRAS = [
- ["dr.riqmonteiro","7652009587767348498","Frango cremoso com tomate, queijo e macarrão"],
- ["dr.riqmonteiro","7634611238961466642","Frango teriyaki desfiado com maionese picante"],
- ["dr.riqmonteiro","7551798879201594680","Tigela de frango mexicano com batata"],
- ["dr.riqmonteiro","7477222909686123831","Nuggets de mel e alho com purê"],
- ["dr.riqmonteiro","7647539625061354770","Nuggets teriyaki com mel e alho"],
- ["dr.riqmonteiro","7637894044479147272","Sanduíche de frango frito coreano"],
- ["dr.riqmonteiro","7459509790197189894","3 níveis de mingau de aveia"],
- ["sarahmbonet","7649132052524190994","3 saladas de marmita (sushi, macarrão, repolho)"],
- ["sarahmbonet","7519260616452803845","Bolo de caneca de whey"],
- ["lucaslacerdanutri","7659413643729177877","Sopa de frango com batata, cenoura e milho"],
- ["lucaslacerdanutri","7621918728514473223","Salada cremosa de milho"],
- ["lucaslacerdanutri","7491388064732843270","Salada de batata com molho verde"],
- ["lucaslacerdanutri","7631194772333432071","Carne moída de outro jeito"],
- ["lucaslacerdanutri","7693563778285325586","Molhos “Supreme”, “KFC” e “Furioso”"],
- ["lucaslacerdanutri","7652356097851804936","3 molhos: palhaço, verde e chipotle"],
- ["lucaslacerdanutri","7690949691046890770","Farofa de cebola caramelizada com flocão"],
- ["lucaslacerdanutri","7457619415790619910","Sobremesa de frutas para a geladeira"],
- ["lu.mtsfit","7648017575007374612","Caldo para o jantar"],
- ["lu.mtsfit","7536229484391894328","Bolinho de chocolate fit com calda"],
- ["silmara.receitas","7640627972612951314","Creme de mandioca com carne"],
- ["hanfoodfit","7646425593369611542","Frango sal e pimenta com batata na air fryer"],
- ["hanfoodfit","7644573849249418518","Bowl de cheeseburger"],
- ["stealth_health_life","7337068401505930538","Butter chicken para meal prep"],
- ["benmoore_coach","7664529268256427284","Brownie proteico com cookie"],
- ["maytesaretti","7659448165225090324","Salada com frango crocante"],
- ["nona.foodstory","7640320176222670093","Salada crocante de verão"],
- ["julianoogf","7704703968114494728","Receita prática em menos de 30 minutos"],
- ["julianoogf","7664674336967560466","Frango marinado no iogurte com especiarias"],
- ["vitorporpino","7668712327138528533","Prato proteico em 30 minutos"],
- ["vitorporpino","7675757018849824020","Sanduíche de frango com molho de manjericão"],
- ["ericknaoki_","7673618524199341332","Tulipa de frango agridoce com saladas"],
- ["nicoletferrari","7677708394282716434","Frango moído empanado na air fryer"],
- ["fiscampos","7698110479423556884","Marmitas: mignon suíno e purê de abóbora"],
- ["prilar_ap_43","7668436523552902420","Ragu de carne que rende a semana"],
- ["febaronee","7677778768039136528","Lanchinhos para congelar (kibe de quinoa, pastel…)"],
- ["minawinkel","7693733915495877908","Café da manhã proteico sem carboidrato"],
- ["eizo.quasenutri","7698043921745579280","Overnight oats"],
- ["jaanathoen","7698364958874012948","Café da manhã pronto para a semana"],
- ["kassiarosaof","7691332899974565138","Tapioca crocante"],
- ["lizspina","7675512525017992469","Pastelzinho fit"],
- ["receitasdoyan","7675465077641973012","Creme de ricota caseiro"],
- ["renatabrugnera","7674262818363018517","Pudim sem açúcar"],
- ["dudaapaim","7665090944575868168","4 ideias de lanche"],
- ["reviskitchenn","7698462032781184270","Ideias de almoço para a semana"],
- ["letaguiardaily","7276931858330406149","Pão com ovo"]
-];
+let R = [], EXTRAS = [], BY = {};
 
 const CAT = {
   almoco:{s:"Almoço",pl:"Almoços",hint:"Rendem marmitas: dá pra fazer tudo num dia de preparo."},
@@ -463,27 +202,6 @@ const SKIP_SCORE = new Set(["cebola","alho"]);
 const TAGL = {fr:"Frango",ca:"Carne",po:"Porco",at:"Atum",ov:"Ovos",ve:"Vegetariano",or:"Oriental",it:"Italiano",me:"Mediterrâneo",am:"Americano",sa:"Saudável",pr:"Proteico",ri:"Rápido",lc:"Low carb",ss:"Sem açúcar",ma:"Marmita",cg:"Congela bem",af:"Air fryer"};
 const TAG_ORDER = Object.keys(TAGL);
 const PROT = ["fr","ca","po","at","ov"];
-/* tags | tipo de prato (o sorteio evita dois do mesmo tipo na semana) */
-const TG = {
- "7698747712795118849":"fr sa pr ma|molho", "7702525002565831942":"ov sa ma|salada", "7701715970963901717":"po sa pr ma cg|panela",
- "7676584171422108949":"fr sa pr ma cg lc|pure", "7678071470836403477":"ca sa pr ma cg|pure", "7671389568326798612":"fr sa pr ma|molho",
- "7680738024640138516":"ca pr ma cg it|massa", "7629355844110388487":"fr pr ma cg or|arroz", "7668682455515237650":"fr sa pr ma or|assado",
- "7667316806146657557":"ca sa pr ma cg|pure", "7649405700229074194":"ca sa pr ma lc|torta", "7662390292661767445":"at sa ma|salada",
- "7670612185822940448":"fr sa pr ma me|bowl", "7647672674117831943":"fr sa pr cg|caldo", "7550320286609034552":"fr sa pr af or lc|assado",
- "7633801613169151239":"fr pr ma|massa", "7630201935777303828":"fr pr ma|arroz", "7623158508111826184":"fr sa pr ma or|bowl",
- "7639857005955419399":"fr sa pr ma lc|assado", "7203799109441080622":"ca sa pr lc am|salada", "7703576477392047382":"fr sa pr|molho",
- "7644269465001135378":"po sa pr ma af lc|assado", "7484267131643710725":"fr pr af or|empanado",
- "7693242234149276935":"ca pr cg af am|sanduiche", "7701345091465645332":"fr pr cg af|empanado", "7679096385060293909":"fr pr cg af am|empanado",
- "7639466929232579861":"fr sa pr cg af|empanado", "7671418113258229013":"fr pr af am|sanduiche", "7691071458260405522":"fr sa pr lc|wrap",
- "7672576542358195477":"at sa pr lc or|frio", "7546994378863054085":"fr sa|paozinho", "7675159911570918672":"fr pr|sanduiche",
- "7530676663290547462":"fr sa pr|paozinho", "7677778768039136528":"fr it|pizza", "7703278986339699982":"lc|petisco",
- "7704797512024100116":"pr ss|bolo", "7305182271236082950":"ov sa pr ss|panqueca", "7680219857773743381":"sa pr ss|pote",
- "7663605546536242450":"sa ss|pote", "7694311604392873224":"pr|bolo", "7644770548655885576":"sa ss|bolo",
- "7645030266234227989":"pr|pote", "7667316806146657558":"sa|bolo",
- "7701355694687014164":"pr|pote", "7488398319316700422":"sa pr ss|mousse", "7463169790467689733":"sa pr ss|gelado",
- "7653111458850426132":"sa ss|mousse", "7650168691245567250":"pr|pote", "7615712974749175053":"sa|pote",
- "7680935336469433622":"pr|bolo", "7664388108128980244":"|barrinha"
-};
 /* ingredientes que estragam rápido depois de abertos valem mais quando se repetem */
 const W = {iogurte:2,requeijao:2,ricota:2,cremecheese:2,cremeleite:2,cheddar:1.6,massapastel:1.6,espinafre:1.6,alface:1.6,tortilha:1.5,pao:1.5,milho:1.5,morango:1.5,abobora:1.5,repolho:1.5,leite:1.4,tomatecereja:1.3,mussarela:1.3,brocolis:1.3,pepino:1.3,mandioquinha:1.3,cebolinha:1.3,salsinha:1.2};
 /* 0 = máxima economia ... 4 = máxima variedade */
@@ -507,18 +225,20 @@ function parseIng(str){
   if(amt){ const m = amt.match(/^([\d.]+)(g|ml|un)$/); if(m){ q=+m[1]; u=m[2]; } }
   return {key,q,u,txt};
 }
-R.forEach(r=>{
-  r.ings = r.i.map(parseIng);
-  r.keys = [...new Set(r.ings.map(x=>x.key).filter(k=>K[k] && K[k][1]!=="desp" && !SKIP_SCORE.has(k)))];
-  const tg=(TG[r.id]||"|").split("|");
-  r.tags=tg[0].split(" ").filter(Boolean); r.kind=tg[1]||"";
-  if(r.t<=15) r.tags.push("ri");
-  if(!r.ings.some(x=>(K[x.key] && K[x.key][1]==="carnes" && x.key!=="ovo") || ["atum","caldo","gelatina","gelatinazero"].includes(x.key))) r.tags.push("ve");
-  r.tags=TAG_ORDER.filter(t=>r.tags.includes(t));
-  r.prot=PROT.find(p=>r.tags.includes(p))||null;
-  r.vid = r.vid || r.id;
-});
-const BY = Object.fromEntries(R.map(r=>[r.id,r]));
+function prepare(){
+  R.forEach(r=>{
+    r.ings = r.i.map(parseIng);
+    r.keys = [...new Set(r.ings.map(x=>x.key).filter(k=>K[k] && K[k][1]!=="desp" && !SKIP_SCORE.has(k)))];
+    r.kind = r.tipo || "";
+    r.tags = (r.tags||"").split(" ").filter(Boolean);
+    if(r.t<=15) r.tags.push("ri");
+    if(!r.ings.some(x=>(K[x.key] && K[x.key][1]==="carnes" && x.key!=="ovo") || ["atum","caldo","gelatina","gelatinazero"].includes(x.key))) r.tags.push("ve");
+    r.tags=TAG_ORDER.filter(t=>r.tags.includes(t));
+    r.prot=PROT.find(p=>r.tags.includes(p))||null;
+    r.vid = r.vid || r.id;
+  });
+  BY = Object.fromEntries(R.map(r=>[r.id,r]));
+}
 function ingText(x){
   if(x.txt) return x.txt;
   const nm = K[x.key] ? K[x.key][0] : x.key;
@@ -812,8 +532,10 @@ document.addEventListener("input",e=>{
 });
 $("#sheet").addEventListener("close",()=>{ $("#sheet-body").innerHTML=""; });
 $("#sheet").addEventListener("click",e=>{ if(e.target.id==="sheet") $("#sheet").close(); });
-window.addEventListener("hashchange",()=>{ show(); window.scrollTo(0,0); });
-show();
+window.addEventListener("hashchange",()=>{ if(R.length){ show(); window.scrollTo(0,0); } });
+fetch("receitas.json",{cache:"no-cache"}).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d=>{ K=d.ingredientes; R=d.receitas; EXTRAS=d.extras||[]; prepare(); show(); })
+  .catch(()=>{ $("#v-semana").innerHTML='<p class="sub">Não consegui carregar as receitas. Confira a internet e recarregue a página.</p>'; });
 </script>
 </body>
 </html>
